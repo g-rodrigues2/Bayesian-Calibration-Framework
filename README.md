@@ -1,4 +1,4 @@
-# Bayesian calibration of a biology-based mathematical model using serial tumor volume and [$^{89}$Zr]-CD8 PET to predict the response of triple-negative breast cancer
+# Bayesian calibration of a biology-based mathematical model using serial tumor volume and [$$^{89}$$Zr]-CD8 PET to predict the response of triple-negative breast cancer
 
 **Authors:** Guilherme Rodrigues, Paulo F. A. Mancera, Anna G. Sorace, Patrick N. Song, Thomas E. Yankeelov, Ernesto A. B. F. Lima
 
