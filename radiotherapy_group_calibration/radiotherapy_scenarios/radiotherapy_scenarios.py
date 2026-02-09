@@ -15,41 +15,22 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib.ticker as mticker
 from scipy.integrate import odeint
-import pdse_project as pdse
 import seaborn as sns
 import scipy.stats as stats
 import sys
-# import arviz as az
+import argparse
 
-
-# Find and sort all text files in the ./data directory
 data_files = sorted(glob.glob("./data/*.txt"))
-
-# Dictionary to store the parsed data, grouped by data type
 full_data = {}
 
-# Loop through each file in the data_files list
 for file in data_files:
-    # Extract the data type (treatment and cell type) from the file name
     data_type = os.path.basename(file).split('/')[-1].split('_c')[0]
-    
-    # Extract the mouse name (cohort identifier) from the file name
     mouse_name = 'c' + file.split('/')[-1].split('_c')[-1].split('_t')[0]
-    
-    # Extract the treatment days from the file name (as integers)
     t_days = np.array([int(t) for t in file.split('/')[-1].split('_c')[-1].split('.txt')[0].split('_t')[1:]])
-    
-    # Load the measurement data from the file (time, tumor volume)
     data = np.loadtxt(file)
-    
-    # Extract the specific treatment from the data type (e.g., radiation or control)
     treatment = os.path.basename(data_type).split('_')[0]
-    
-    # If this data type hasn't been seen before, create a new list in full_data
     if data_type not in full_data:
         full_data[data_type] = []
-    
-    # Append the mouse's data (including name, tumor measurements, treatment, and treatment days) to the appropriate group
     full_data[data_type].append({
         'name': mouse_name,
         'data': data,
@@ -57,7 +38,7 @@ for file in data_files:
         'treatment_days': t_days
     })
 
-    # Concordance Correlation Coefficient
+# Concordance Correlation Coefficient
 def ccc(x, y):
     """
     Calculate the Concordance Correlation Coefficient (CCC).
@@ -68,9 +49,24 @@ def ccc(x, y):
     Returns:
     - CCC value
     """
-    sxy = np.sum((x - x.mean()) * (y - y.mean())) / x.shape[0]
-    rhoc = 2 * sxy / (np.var(x) + np.var(y) + (x.mean() - y.mean())**2)
-    return rhoc
+    x, y = np.asarray(x), np.asarray(y)
+    
+    if len(x) != len(y):
+        raise ValueError("Input arrays must have the same length")
+    
+    if x.size == 0 or y.size == 0:
+        raise ValueError("Input arrays must not be empty")
+    
+    mean_x, mean_y = np.mean(x), np.mean(y)
+    var_x, var_y = np.var(x), np.var(y)
+    
+    if var_x == 0 or var_y == 0:
+        raise ValueError("Input arrays must not have zero variance")
+    
+    covariance = np.cov(x, y, bias=True)[0, 1]
+    ccc_value = (2 * covariance) / (var_x + var_y + (mean_x - mean_y) ** 2)
+    
+    return ccc_value
 
 # Pearson Correlation Coefficient
 def pcc(x, y):
@@ -83,9 +79,24 @@ def pcc(x, y):
     Returns:
     - PCC value
     """
-    sxy = np.sum((x - x.mean()) * (y - y.mean())) / x.shape[0]
-    rho = sxy / (np.std(x) * np.std(y))
-    return rho
+    x, y = np.asarray(x), np.asarray(y)
+    
+    if len(x) != len(y):
+        raise ValueError("Input arrays must have the same length")
+    
+    if x.size == 0 or y.size == 0:
+        raise ValueError("Input arrays must not be empty")
+    
+    mean_x, mean_y = np.mean(x), np.mean(y)
+    std_x, std_y = np.std(x), np.std(y)
+    
+    if std_x == 0 or std_y == 0:
+        raise ValueError("Input arrays must not have zero variance")
+    
+    covariance = np.cov(x, y, bias=True)[0, 1]
+    pcc_value = covariance / (std_x * std_y)
+    
+    return pcc_value
 
 # Normalized Root Mean Squared Error
 def nrmse(actual, pred): 
@@ -99,12 +110,21 @@ def nrmse(actual, pred):
     Returns:
     - NRMSE value
     """
-    actual, pred = np.array(actual), np.array(pred)
-    rmse = np.sqrt(np.sum((actual - pred)**2) / len(actual))
-    return rmse / np.mean(actual) * 100
+    actual, pred = np.asarray(actual), np.asarray(pred)
+    
+    if len(actual) != len(pred):
+        raise ValueError("Input arrays must have the same length")
+    
+    if actual.size == 0 or pred.size == 0:
+        raise ValueError("Input arrays must not be empty")
+    
+    rmse = np.sqrt(np.mean((actual - pred)**2))
+    nrmse_value = rmse / np.mean(actual) * 100
+    
+    return nrmse_value
 
 # Mean Absolute Percentage Error
-def mape(actual, pred): 
+def mape(pred, actual): 
     """
     Calculate the Mean Absolute Percentage Error (MAPE).
 
@@ -115,38 +135,40 @@ def mape(actual, pred):
     Returns:
     - MAPE value
     """
-    actual, pred = np.array(actual), np.array(pred)
-    return np.mean(np.abs((actual - pred) / actual)) * 100
-
-#-------------------------- Modelos de Radioterapia ---------------------------------------
+    actual, pred = np.asarray(actual), np.asarray(pred)
+    
+    if len(actual) != len(pred):
+        raise ValueError("Input arrays must have the same length")
+    
+    if actual.size == 0 or pred.size == 0:
+        raise ValueError("Input arrays must not be empty")
+    
+    if np.any(actual == 0):
+        raise ValueError("Actual values must not contain zeros")
+    
+    mape_value = np.mean(np.abs((actual - pred) / actual)) * 100
+    
+    return mape_value
 
 @jit(nopython=True)
-def model_DamageRepairTimeDelay(y, t, growth_rate, carrying_capacity, a_radiation, b_radiation, delay, tau_radiation, dose_schedule):
-    """
-    Modelo logístico com efeito da radioterapia (LQ model).
-    """
-    # Crescimento logístico
+def model_ExponentialDecayDelay(y, t, growth_rate, carrying_capacity, a_radiation, b_radiation, delay, tau_radiation, dose_schedule):
     tumor = y
     tumor_volume = growth_rate * tumor * (1 - tumor / carrying_capacity)
 
-    # Efeito do tratamento (radiação)
     treatment_effect = 0
     for dose, tau in zip(dose_schedule, tau_radiation):
-        if t >= tau + delay:  # Aplica o efeito de delay
+        if t >= tau + delay:
             treatment_effect += a_radiation * dose * np.exp(-b_radiation * (t - tau - delay))
 
-    # Ajuste do volume tumoral pelo tratamento
-    tumor_volume -= treatment_effect * tumor  # Redução do tumor pela radioterapia
-
+    tumor_volume -= treatment_effect * tumor
     return tumor_volume
 
 def solve_model(model_extension, time_array, parameters, initial_condition, treatment_days, dose, type_sol='data'):
     model_name = 'model' + model_extension
-    model_func = globals()[model_name]  # Obtém a função do modelo (ex: model_LQ)
+    model_func = globals()[model_name]
 
-    # Definir o número de doses e dias de tratamento a partir dos dados fornecidos
     tau_radiation = treatment_days
-    dose_schedule = [dose] * len(tau_radiation)  # Todas as doses são de 2Gy
+    dose_schedule = [dose] * len(tau_radiation)
 
     if type_sol == 'smooth':
         bgn_p = round(time_array[0], 1)
@@ -157,31 +179,75 @@ def solve_model(model_extension, time_array, parameters, initial_condition, trea
     else:
         return odeint(model_func, t=time_array, y0=[initial_condition], args=(*parameters, tau_radiation, dose_schedule), mxstep=2000)
 
-def log_likelihood(theta, model_extension, full_data, group):
-    
+def scenario_tag(scenario: int) -> str:
+    return f"V{int(scenario)}"
+
+def scenario_base_dim(scenario: int) -> int:
+    # base params: alpha(s), beta(s), delta(s)
+    return {1: 6, 2: 4, 3: 4, 4: 3, 5: 5, 6: 5, 7: 5, 8: 4}[int(scenario)]
+
+def scenario_param_indices(scenario: int):
+    # returns indices in theta for a_s,a_r,b_s,b_r,d_s,d_r (duplicating globals)
+    m = {
+        1: dict(a_s=0, a_r=1, b_s=2, b_r=3, d_s=4, d_r=5),                  # all group-specific
+        2: dict(a_s=0, a_r=0, b_s=1, b_r=2, d_s=3, d_r=3),                  # a global, b gs, d global
+        3: dict(a_s=0, a_r=1, b_s=2, b_r=2, d_s=3, d_r=3),                  # a gs, b global, d global
+        4: dict(a_s=0, a_r=0, b_s=1, b_r=1, d_s=2, d_r=2),                  # all global
+        5: dict(a_s=0, a_r=1, b_s=2, b_r=3, d_s=4, d_r=4),                  # a gs, b gs, d global
+        6: dict(a_s=0, a_r=1, b_s=2, b_r=2, d_s=3, d_r=4),                  # a gs, b global, d gs
+        7: dict(a_s=0, a_r=0, b_s=1, b_r=2, d_s=3, d_r=4),                  # a global, b gs, d gs
+        8: dict(a_s=0, a_r=0, b_s=1, b_r=1, d_s=2, d_r=3),                  # a global, b global, d gs
+    }
+    return m[int(scenario)]
+
+def group_param_labels(scenario: int, group_name: str):
+    scenario = int(scenario)
+    idx = scenario_param_indices(scenario)
+
+    def lab(shared, gs, which):
+        return shared if gs is False else f"{gs}_{which}"
+
+    # alpha label
+    alpha_is_global = (idx["a_s"] == idx["a_r"])
+    beta_is_global  = (idx["b_s"] == idx["b_r"])
+    delt_is_global  = (idx["d_s"] == idx["d_r"])
+
+    if group_name == "radiation_sensitive":
+        a_lab = "a" if alpha_is_global else "a_s"
+        b_lab = "b" if beta_is_global else "b_s"
+        d_lab = "d" if delt_is_global else "d_s"
+    else:
+        a_lab = "a" if alpha_is_global else "a_r"
+        b_lab = "b" if beta_is_global else "b_r"
+        d_lab = "d" if delt_is_global else "d_r"
+
+    return [a_lab, b_lab, d_lab]
+
+def log_likelihood(theta, model_extension, full_data, group, scenario=1):
     ll = 0
-    
-    rs = 8.89429860e-02  # Crescimento para radiation_sensitive
-    rr = 1.15631515e-01  # Crescimento para radiation_resistant
-    carrying_capacity = 3.69671552e+03  # Capacidade de suporte compartilhada
+
+    rs = 8.89429860e-02
+    rr = 1.15631515e-01
+    carrying_capacity = 3.69671552e+03
 
     variance = theta[-1] ** 2
 
-    a_s = theta[0]
-    a_r = theta[1]  
-    b_s = theta[2]    
-    b_r= theta[3]
-    d_s = theta[4]
-    d_r = theta[5]
+    idx_map = scenario_param_indices(scenario)
+    a_s = theta[idx_map["a_s"]]
+    a_r = theta[idx_map["a_r"]]
+    b_s = theta[idx_map["b_s"]]
+    b_r = theta[idx_map["b_r"]]
+    d_s = theta[idx_map["d_s"]]
+    d_r = theta[idx_map["d_r"]]
 
     ndim = 0
     for c_group in group:
         ndim += len(full_data[c_group])
-    
+
     idx = 0
     for c_group in group:
         for mouse_data in full_data[c_group]:
-            treatment_days = mouse_data['treatment_days']  
+            treatment_days = mouse_data['treatment_days']
             dose = 2
             time_array = mouse_data['data'][:, 0]
 
@@ -190,312 +256,344 @@ def log_likelihood(theta, model_extension, full_data, group):
                 a_radiation = a_s
                 b_radiation = b_s
                 delay = d_s
-        
             elif c_group == 'radiation_resistant':
                 growth_rate = rr
                 a_radiation = a_r
                 b_radiation = b_r
                 delay = d_r
+            else:
+                raise ValueError(f"Unexpected group: {c_group}")
 
             treatment_params = (a_radiation, b_radiation, delay)
+            initial_condition = theta[-(ndim + 1) + idx]
 
-            initial_condition = theta[-(ndim+1)+idx]
+            solution = solve_model(
+                model_extension,
+                time_array,
+                (growth_rate, carrying_capacity, *treatment_params),
+                initial_condition,
+                treatment_days,
+                dose
+            )
 
-            solution = solve_model(model_extension, time_array, (growth_rate, carrying_capacity, *treatment_params), 
-                               initial_condition, treatment_days, dose)
-            # print('teste\n', solution)
             observed_volume = mouse_data['data'][:, 1]
             ll += -0.5 * np.sum((solution[:, 0] - observed_volume) ** 2 / variance + np.log(2 * np.pi) + np.log(variance))
-
             idx += 1
 
     return ll
 
-# Define the logarithm of the prior probability for the model parameters
 def log_prior(theta, l_bound, u_bound):
-    """
-    Logarithm of the prior probability for the model parameters.
-
-    Parameters:
-    - theta: Model parameters
-    - l_bound: Lower bounds for the parameters
-    - u_bound: Upper bounds for the parameters
-
-    Returns:
-    - Logarithm of the prior probability
-    """
     for l, p, u in zip(l_bound, theta, u_bound):
         if not (l < p < u):
-            return -np.inf  # Return negative infinity for invalid parameter values
+            return -np.inf
     return 0.0
 
-def log_probability(theta, l_bound, u_bound, model_extension, full_data, group):
-    """
-    Calcula a probabilidade total (verossimilhança + prior) para o grupo inteiro.
-    
-    Parameters:
-    - theta: Parâmetros do modelo.
-    - l_bound: Limites inferiores dos parâmetros.
-    - u_bound: Limites superiores dos parâmetros.
-    - model_extension: O modelo a ser usado (por exemplo, '_exp', '_log').
-    - full_data: Dicionário contendo os dados dos grupos e ratos.
-    - group: O grupo de tratamento (por exemplo, 'control_sensitive' ou 'control_resistant').
-    
-    Returns:
-    - Log da probabilidade total.
-    """
-    # Calcular o log do prior (probabilidade dos parâmetros)
+def log_probability(theta, l_bound, u_bound, model_extension, full_data, group, scenario=1):
     lp = log_prior(theta, l_bound, u_bound)
     if not np.isfinite(lp):
-        return -np.inf  # Retorna -infinito se os parâmetros estiverem fora dos limites
-
-    # Somar o log da verossimilhança para todos os ratos do grupo
-    return lp + log_likelihood(theta, model_extension, full_data, group)
-    
+        return -np.inf
+    return lp + log_likelihood(theta, model_extension, full_data, group, scenario=scenario)
 
 def find_max_time_per_group(full_data):
     max_times = {}
-
-    # Iterar sobre cada grupo em full_data
     for group, mice_data in full_data.items():
         max_time = 0
-        
-        # Iterar sobre os dados de cada rato no grupo
         for mouse in mice_data:
-            time_data = mouse['data'][:, 0]  # A primeira coluna é o tempo
-            max_time_mouse = max(time_data)  # Acha o valor máximo de tempo para o rato atual
-            
-            # Atualiza o tempo máximo do grupo, se o tempo do rato atual for maior
+            time_data = mouse['data'][:, 0]
+            max_time_mouse = max(time_data)
             if max_time_mouse > max_time:
                 max_time = max_time_mouse
-        
-        # Armazena o valor máximo de tempo para o grupo
         max_times[group] = max_time
-
     return max_times
 
+def configure_plot_settings(fontsize):
+    plt.rcParams['font.size'] = fontsize
+    formatter = mticker.ScalarFormatter(useMathText=True)
+    formatter.set_powerlimits((-3, 2))
+    return formatter
 
+
+def finalize_plot(fig, axes, nScenarios, nCols, nRows, full_exp, full_model, save, show, figure_name, formatter):
+    final_exp = np.concatenate(full_exp, axis=0) if full_exp else np.array([])
+    final_model = np.concatenate(full_model, axis=0) if full_model else np.array([])
+
+    if final_exp.size == 0 or final_model.size == 0:
+        print("Error: One of the final arrays is empty.")
+        return
+
+    rounded_max = math.ceil(np.max(np.concatenate([final_exp, final_model])) / 1000) * 1000
+    for ax in axes[:nScenarios]:
+        ax.set_ylim((0, rounded_max))
+        ax.yaxis.set_major_formatter(formatter)
+    for i in range(nScenarios, nRows * nCols):
+        fig.delaxes(axes[i])
+    if save:
+        plt.savefig(figure_name + '.pdf', bbox_inches='tight', pad_inches=0.02)
+    if show:
+        plt.show()
+    else:
+        plt.close()
+
+def color_plot_scatter(final_exp, final_model, save, show, group, figure_name, formatter):
+    prop_cycle = plt.rcParams['axes.prop_cycle']
+    colors = prop_cycle.by_key()['color']
+    fig, ax = plt.subplots(figsize=(5, 5))
+    c = 1
+    all_cccs = []
+    for i in range(len(final_exp)):
+        all_cccs.append(ccc(final_model[i], final_exp[i]))
+        if all_cccs[-1] < 0.8:
+            ax.plot(final_exp[i], final_model[i], 'o', color=colors[c%len(colors)])
+            c += 1
+        else:
+            ax.plot(final_exp[i], final_model[i], 'o', color='black')
+    ax.set_xlabel('Data - Tumor volume (mm³)')
+    ax.set_ylabel('Model - Tumor volume (mm³)')
+    line = mlines.Line2D([0, 1], [0, 1], color='black', linestyle='dashed')
+    line.set_transform(ax.transAxes)
+    ax.add_line(line)
+    final_exp = np.concatenate(final_exp)
+    final_model = np.concatenate(final_model)
+    max_value = max((max(final_exp),max(final_model)))
+    max_value = math.ceil(max_value / 1000) * 1000
+    ticks = np.linspace(0, max_value, num=int(max_value/1000)+1)  # Adjust num for the desired number of ticks
+    
+    ax.set_ylim((0, max_value))
+    ax.set_xlim((0, max_value))
+    ax.set_xticks(ticks)
+    ax.set_yticks(ticks)
+    ax.yaxis.set_major_formatter(formatter)
+    ax.xaxis.set_major_formatter(formatter)
+    
+    pccT = pcc(final_model, final_exp)
+    cccT = ccc(final_model, final_exp)
+    #mapeT = mape(final_model, final_exp)
+    all_cccs = np.array(all_cccs)
+    if group == "radiation_resistant":
+        mapeT = mape(final_model, final_exp)
+        ax.text(0.025, .8, 'CCC/PCC = {:.2f}/{:.2f}\nMAPE = {:.2f}%\n CCC = {:.2f}$\pm${:.2f}'.format(cccT, pccT, mapeT, all_cccs.mean(), all_cccs.std()), horizontalalignment='left', transform=ax.transAxes)
+    else:
+        ax.text(0.025, .8, 'CCC/PCC = {:.2f}/{:.2f}\n CCC = {:.2f}$\pm${:.2f}'.format(cccT, pccT, all_cccs.mean(), all_cccs.std()), horizontalalignment='left', transform=ax.transAxes)
+    
+    if save:
+        plt.savefig(figure_name + '_sp.pdf', bbox_inches='tight', pad_inches=0.02)
+    if show:
+        plt.show()
+    else:
+        plt.close()
+    return
+        
 def plot_maxll_solution(files_location_sensitive, files_location_resistant, full_data, nCols=3, show=True, save=True, fontsize='14', figure_name='maxll_figure'):
     if not show and not save:
-        return 
-    
-    formatter = pdse.configure_plot_settings(fontsize)
+        return
+
+    formatter = configure_plot_settings(fontsize)
     plt.rcParams['font.size'] = fontsize
     formatter = mticker.ScalarFormatter(useMathText=True)
     formatter.set_powerlimits((-3, 2))
 
-    # Verificar se os arquivos foram passados corretamente
     theta_sensitive = None
     theta_resistant = None
 
     if files_location_sensitive is not None:
         npzfile_sensitive = np.load(files_location_sensitive)
         theta_sensitive = npzfile_sensitive['pars']
-        print("Parâmetros carregados para radiation_sensitive:\n", theta_sensitive)
 
     if files_location_resistant is not None:
         npzfile_resistant = np.load(files_location_resistant)
         theta_resistant = npzfile_resistant['pars']
-        print("Parâmetros carregados para radiation_resistant:\n", theta_resistant)
 
     max_times = find_max_time_per_group(full_data)
 
-    # Parâmetros fixos que não estão no vetor `theta`
-    rs = 8.89429860e-02  # Crescimento para radiation_sensitive
-    rr = 1.15631515e-01  # Crescimento para radiation_resistant
-    carrying_capacity = 3.69671552e+03  # Capacidade de suporte
+    rs = 8.89429860e-02
+    rr = 1.15631515e-01
+    carrying_capacity = 3.69671552e+03
 
-        # Iterar sobre os grupos e plotar os melhores ajustes
     for group in ['radiation_sensitive', 'radiation_resistant']:
         if group == 'radiation_sensitive' and theta_sensitive is not None:
-            print(f"Processando: {group}")
             theta = theta_sensitive
         elif group == 'radiation_resistant' and theta_resistant is not None:
-            print(f"Processando: {group}")
             theta = theta_resistant
         else:
-            continue  # Se o grupo não tem dados, pula para o próximo
+            continue
 
-        # Configurar os subplots
         nScenarios = len(full_data[group])
         nRows = int(np.ceil(nScenarios / nCols))
         fig, axes = plt.subplots(nrows=nRows, ncols=nCols, figsize=(nCols * 11, nRows * 5))
         axes = axes.ravel()
 
         full_exp = []
-        full_model = [] 
+        full_model = []
 
-        model_extension = "_DamageRepairTimeDelay" 
-
+        model_extension = "_ExponentialDecayDelay"
         ndim = len(full_data[group])
-        treatment_params = (tuple(theta[:-(ndim+1)])) # Extrair `a_s`, `b_radiation`, e `delay` corretamente
-        print(f'Params de tratamento = [{treatment_params}]\nQtd. de parametros = {len(theta)}\nQtd. de animais = {ndim}\n'  )  
+        treatment_params = tuple(theta[:-(ndim + 1)])
 
         max_time_group = max_times[group]
 
-        # Plotar cada rato no grupo
         for idx, mouse_data in enumerate(full_data[group]):
             mouse_name = mouse_data['name']
             ax = axes[idx]
 
-            # Acessar os dados de volume tumoral diretamente
             data = mouse_data['data']
             treatment_days = mouse_data['treatment_days']
-            dose = 2  # Dose fixa de 2Gy
+            dose = 2
 
             ax.set_ylabel('Tumor Volume (mm³)')
             ax.text(0.05, .9, f'{string.ascii_uppercase[idx]}) {mouse_name}', horizontalalignment='left', transform=ax.transAxes, fontsize=18)
-
-            # Plotar os dados reais (exp)
             ax.plot(data[:, 0], data[:, 1], 'o', color='black', markersize=10, label='Tumor Volume')
             ax.set_xlabel('Time (days)')
             ax.yaxis.set_major_formatter(formatter)
             ax.set_xlim((-1, max_time_group + 1))
 
-            # Adicionar linhas verticais para os dias de tratamento
             for t_day in treatment_days:
                 ax.axvline(x=t_day, color='green', linestyle='--', linewidth=1)
 
-            # Determinar o parâmetro de taxa de crescimento com base no grupo
-            if group == 'radiation_sensitive':
-                growth_rate = rs
-            elif group == 'radiation_resistant':
-                growth_rate = rr
+            growth_rate = rs if group == 'radiation_sensitive' else rr
+            initial_condition = theta[-(ndim + 1) + idx]
 
-            initial_condition = theta[-(ndim + 1) + idx]  
+            solution = solve_model(
+                model_extension,
+                data[:, 0],
+                (growth_rate, carrying_capacity, *treatment_params),
+                initial_condition,
+                treatment_days,
+                dose,
+                'smooth'
+            )
 
-            solution = solve_model(model_extension, data[:, 0], (growth_rate, carrying_capacity, *treatment_params), 
-                               initial_condition, treatment_days, dose, 'smooth')
-            
-
-            # Filtrar as soluções para os tempos que correspondem a `data[:, 0]`
             mask = np.isin(solution[:, 0], data[:, 0])
             matched_solution_times = solution[mask, 0]
             matched_solution_volumes = solution[mask, 1]
 
-            # Plotar a solução do modelo ajustado
             ax.plot(matched_solution_times, matched_solution_volumes, color='black', linestyle='dashed', linewidth=2, label='Model')
 
-            # Adicionar a solução e os dados reais às listas para análise posterior
             full_model.append(matched_solution_volumes)
             full_exp.append(data[:, 1])
 
-            # Calcular métricas de ajuste (CCC, PCC)
             pccT = pcc(matched_solution_volumes, data[:, 1])
             cccT = ccc(matched_solution_volumes, data[:, 1])
 
-            # Mostrar as métricas no gráfico
             if group == 'radiation_sensitive':
                 ax.text(0.5, .05, f'CCC/PCC = {cccT:.2f}/{pccT:.2f}', horizontalalignment='left', transform=ax.transAxes)
             else:
-                mapeT = pdse.mape(matched_solution_volumes, data[:, 1])
-                # Mostrar as métricas no gráfico
+                mapeT = mape(matched_solution_volumes, data[:, 1])
                 ax.text(0.5, .05, 'CCC/PCC/MAPE = {:.2f}/{:.2f}/{:.2f}%'.format(cccT, pccT, mapeT), horizontalalignment='left', transform=ax.transAxes)
-        
-        # Ajustar o nome do arquivo para salvar os gráficos separadamente por grupo
-        version = 'V1'
-        group_figure_name = f'{figure_name}{version}'  # Nome para salvar o arquivo
 
-        # Finalizar o gráfico para o grupo
-        pdse.finalize_plot(fig, axes, nScenarios, nCols, nRows, full_exp, full_model, save, show, group_figure_name, formatter)
-        pdse.color_plot_scatter(full_exp, full_model, save, show, group, group_figure_name, formatter)
+        finalize_plot(fig, axes, nScenarios, nCols, nRows, full_exp, full_model, save, show, figure_name, formatter)
+        color_plot_scatter(full_exp, full_model, save, show, group, figure_name, formatter)
 
     return
 
-
 def find_max_initial_condition(full_data):
-    """
-    Função para encontrar a maior condição inicial (IC) entre todos os camundongos de ambos os grupos.
-
-    Parâmetros:
-    - full_data: Dicionário contendo os dados de todos os camundongos agrupados por tratamento.
-
-    Retorna:
-    - maior_ic: O maior valor de condição inicial (IC) encontrado.
-    - grupo_maior_ic: O grupo ao qual pertence o camundongo com a maior condição inicial (Control Sensitive ou Control Resistant).
-    - camundongo_maior_ic: O nome do camundongo com a maior condição inicial.
-    """
-    maior_ic = -float('inf')  # Inicializa com -infinito para garantir que qualquer valor será maior
+    maior_ic = -float('inf')
     grupo_maior_ic = None
     camundongo_maior_ic = None
-
-    # Iterar sobre os grupos
     for group, mice_data in full_data.items():
-        # Iterar sobre os dados de cada camundongo no grupo
         for mouse in mice_data:
-            # A condição inicial é o primeiro valor de volume tumoral registrado
-            ic = mouse['data'][0, 1]  # Primeira linha (tempo inicial), segunda coluna (volume tumoral)
-
-            # Comparar se a condição inicial atual é maior do que a maior já registrada
+            ic = mouse['data'][0, 1]
             if ic > maior_ic:
                 maior_ic = ic
                 grupo_maior_ic = group
                 camundongo_maior_ic = mouse['name']
-
     return maior_ic, grupo_maior_ic, camundongo_maior_ic
 
-max_ic = find_max_initial_condition(full_data)
-max_ic = max_ic[0]
-# print(max_ic)
+max_ic = find_max_initial_condition(full_data)[0]
 
-
-def define_bounds_labels(model_extension, bool_multiple_mice = False):
+def define_bounds_labels(model_extension, scenario=1, bool_multiple_mice=False):
     labels = []
     l_bound = []
     u_bound = []
-    ic_max = max_ic*2
-    if model_extension == '_DamageRepairTimeDelay':
-        labels = ["a_s", "a_r", "b_s", "b_r", "d_s", "d_r"]
-        l_bound = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        u_bound = [0.1, 0.1, 0.1, 2.0, 10.0, 10.0]
-  
-    if bool_multiple_mice:       
+
+    ic_max = max_ic * 2
+    scenario = int(scenario)
+
+    if model_extension == '_ExponentialDecayDelay':
+        idx = scenario_param_indices(scenario)
+
+        alpha_global = (idx["a_s"] == idx["a_r"])
+        beta_global  = (idx["b_s"] == idx["b_r"])
+        delt_global  = (idx["d_s"] == idx["d_r"])
+
+        if alpha_global:
+            labels += ["a"]
+            l_bound += [0.0]
+            u_bound += [0.1]
+        else:
+            labels += ["a_s", "a_r"]
+            l_bound += [0.0, 0.0]
+            u_bound += [0.1, 0.1]
+
+        if beta_global:
+            labels += ["b"]
+            l_bound += [0.0]
+            u_bound += [2.0]
+        else:
+            labels += ["b_s", "b_r"]
+            l_bound += [0.0, 0.0]
+            u_bound += [0.1, 2.0]
+
+        if delt_global:
+            labels += ["d"]
+            l_bound += [0.0]
+            u_bound += [10.0]
+        else:
+            labels += ["d_s", "d_r"]
+            l_bound += [0.0, 0.0]
+            u_bound += [10.0, 10.0]
+
+    if bool_multiple_mice:
         for i in range(group_size):
-            labels.append("ic" + str(i+1))
-            l_bound.append(0.0000)
+            labels.append("ic" + str(i + 1))
+            l_bound.append(0.0)
             u_bound.append(ic_max)
         labels.append("std")
         l_bound.append(0.1)
         u_bound.append(1000.0)
     else:
         labels.append("ic")
-        l_bound.append(0.0000)
+        l_bound.append(0.0)
         u_bound.append(ic_max)
         labels.append("std")
         l_bound.append(0.1)
         u_bound.append(1000.0)
+
     return l_bound, u_bound, labels
 
-# # Função principal
 if __name__ == "__main__":
-    # Find and sort all text files in the ./data directory
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--sce1", action="store_true")
+    parser.add_argument("--sce2", action="store_true")
+    parser.add_argument("--sce3", action="store_true")
+    parser.add_argument("--sce4", action="store_true")
+    parser.add_argument("--sce5", action="store_true")
+    parser.add_argument("--sce6", action="store_true")
+    parser.add_argument("--sce7", action="store_true")
+    parser.add_argument("--sce8", action="store_true")
+    args = parser.parse_args()
+
+    selected_scenarios = []
+    if args.sce1: selected_scenarios.append(1)
+    if args.sce2: selected_scenarios.append(2)
+    if args.sce3: selected_scenarios.append(3)
+    if args.sce4: selected_scenarios.append(4)
+    if args.sce5: selected_scenarios.append(5)
+    if args.sce6: selected_scenarios.append(6)
+    if args.sce7: selected_scenarios.append(7)
+    if args.sce8: selected_scenarios.append(8)
+    if not selected_scenarios:
+        selected_scenarios = [1]
+
     data_files = sorted(glob.glob("./data/*.txt"))
-
-    # Dictionary to store the parsed data, grouped by data type
     full_data = {}
-
-    # Loop through each file in the data_files list
     for file in data_files:
-        # Extract the data type (treatment and cell type) from the file name
         data_type = os.path.basename(file).split('/')[-1].split('_c')[0]
-        
-        # Extract the mouse name (cohort identifier) from the file name
         mouse_name = 'c' + file.split('/')[-1].split('_c')[-1].split('_t')[0]
-        
-        # Extract the treatment days from the file name (as integers)
         t_days = np.array([int(t) for t in file.split('/')[-1].split('_c')[-1].split('.txt')[0].split('_t')[1:]])
-        
-        # Load the measurement data from the file (time, tumor volume)
         data = np.loadtxt(file)
-        
-        # Extract the specific treatment from the data type (e.g., radiation or control)
         treatment = os.path.basename(data_type).split('_')[0]
-        
-        # If this data type hasn't been seen before, create a new list in full_data
         if data_type not in full_data:
             full_data[data_type] = []
-        
-        # Append the mouse's data (including name, tumor measurements, treatment, and treatment days) to the appropriate group
         full_data[data_type].append({
             'name': mouse_name,
             'data': data,
@@ -503,221 +601,148 @@ if __name__ == "__main__":
             'treatment_days': t_days
         })
 
-    version = 'V1'
     run_calibration = True
     if run_calibration:
-        for model_extension in ['_DamageRepairTimeDelay']: #'_exp', '_mendel', '_bert', '_lin', '_gomp', '_surf', '_log']:
+        for model_extension in ['_ExponentialDecayDelay']:
+            original_group = ['radiation_sensitive', 'radiation_resistant']
 
-            original_group = ['radiation_sensitive', 'radiation_resistant']                        
             group_size = 0
             new_group = []
-            for group in ['radiation_sensitive', 'radiation_resistant']:
-            
-                group_size += len(full_data[group])        
+            for group in original_group:
+                group_size += len(full_data[group])
                 new_group.append(group)
-                    
 
-            l_bound, u_bound, labels = define_bounds_labels(model_extension, bool_multiple_mice=True)
             group = new_group
-            # print(group)
-            # print(labels)
-            
-            # Obtenha o número de dimensões com base nos limites
-            ndim = len(l_bound)
-            
-            # Define o número de walkers para o MCMC
-            nwalkers = 2 * ndim
-            
-            # Nome do arquivo para o backend
-            filename = f"./reinitiate_files/calibration{version}.h5"
+            num_ic_sensitive = len(full_data['radiation_sensitive'])
+            num_ic_resistant = len(full_data['radiation_resistant'])
 
-            
-            # Verificar se o arquivo existe
-            if not os.path.exists(filename):
-                print("Arquivo HDF5 não encontrado. Criando um novo arquivo...")
-                backend = emcee.backends.HDFBackend(filename)
-                backend.reset(nwalkers, ndim)  # Resetar backend para iniciar uma nova execução
-                
-                # Inicializar posições aleatórias para os walkers
-                pos = np.zeros((nwalkers, ndim))
-                for i in range(ndim):
-                    pos[:, i] = np.random.uniform(low=l_bound[i], high=u_bound[i], size=nwalkers)
-            else:
-                print(f"Arquivo HDF5 encontrado: {filename}")
-                backend = emcee.backends.HDFBackend(filename)
-                print(f"Progresso atual no backend: {backend.iteration} iterações.")
-                
-                # Caso o arquivo exista, inicializar `pos` como `None` para continuar
-                pos = None
+            for scenario in selected_scenarios:
+                version = scenario_tag(scenario)
+                base_n = scenario_base_dim(scenario)
+                idx_map = scenario_param_indices(scenario)
 
-            # Define o tamanho da cadeia de Markov adicional
-            additional_chain_size = 10  # Número de passos adicionais    
+                std_idx = base_n + num_ic_sensitive + num_ic_resistant
+                ics_s_idx = list(range(base_n, base_n + num_ic_sensitive))
+                ics_r_idx = list(range(base_n + num_ic_sensitive, base_n + num_ic_sensitive + num_ic_resistant))
 
-            print(f'Calibrating {group}, using model {model_extension.split("_")[-1]}')
-            
-            # Calibração do modelo para o grupo usando MCMC - TACC
-            # n_cores = cpu_count()
-            # optimal_cores = int(n_cores * 0.75)
-            # print(f"Número de núcleos usados: {optimal_cores}")
-            with Pool(processes=cpu_count()) as pool:
-                sampler = emcee.EnsembleSampler(
-                    nwalkers, ndim, log_probability, 
-                    args=(l_bound, u_bound, model_extension, full_data, group),
-                    pool = pool,
-                    backend=backend
-                )
-                # Se já existe progresso, continue; caso contrário, inicie nova cadeia
-                if backend.iteration > 0:
-                    sampler.run_mcmc(None, additional_chain_size, progress=True)  # Continue de onde parou
+                l_bound, u_bound, labels = define_bounds_labels(model_extension, scenario=scenario, bool_multiple_mice=True)
+                ndim = len(l_bound)
+                nwalkers = 2 * ndim
+
+                filename = f"./reinitiate_files/calibration_{model_extension}_{version}.h5"
+
+                if not os.path.exists(filename):
+                    print("HDF5 file not found. Creating a new file....")
+                    backend = emcee.backends.HDFBackend(filename)
+                    backend.reset(nwalkers, ndim)
+                    pos = np.zeros((nwalkers, ndim))
+                    for i in range(ndim):
+                        pos[:, i] = np.random.uniform(low=l_bound[i], high=u_bound[i], size=nwalkers)
                 else:
-                    sampler.run_mcmc(pos, additional_chain_size, progress=True)  # Inicie uma nova execução
-            
-            flat_ll = sampler.get_log_prob(flat=True)
-            flat_chain = sampler.get_chain(flat=True)
-            max_pos = flat_ll.argmax(axis=0)
-            best_pars = flat_chain[max_pos]
-            total_size = ((additional_chain_size - additional_chain_size//4)*ndim*2)
-            goal_size = 10000
-            scale_corner = max(1, total_size // goal_size) # adcionei o max para garantir que scale_corner nunca será zero
-            # size_discard = chain_size - 10000 // nwalkers
-            save_chain = sampler.get_chain(discard=additional_chain_size // 4, flat=True, thin = scale_corner)
-            
-            # ---------------------------------------------------
-            # '''
-            # BLOCO PARA AVALIAR A CONVERGENCIA DAS CADEIAS DE MARKOV
-            # UTILIZANDO O CRITÉRIO GELMAN-RUBIN
-            # '''
-            # # Obter as cadeias do sampler
-            # chains = sampler.get_chain(discard=additional_chain_size // 4, flat=False)
-            # # Transformar as cadeias em um Dataset
-            # chains_dataset = az.convert_to_dataset(chains)
-            # # Calcular o Rhat
-            # rhat = az.rhat(chains_dataset)
-            # print("Rhat values:", rhat)
-            # for param in rhat.data_vars:  # Itera sobre as variáveis do dataset
-            #     values = rhat[param].values  # Obtém os valores do Rhat para o parâmetro
-            #     print(f"Parâmetro {param}:")
-            #     for i, value in enumerate(values):
-            #         print(f"  Subíndice {i}: Rhat = {value:.3f}")
-            
-            # -----------------------------------------------------------------------
+                    print(f"HDF5 file found: {filename}")
+                    backend = emcee.backends.HDFBackend(filename)
+                    print(f"Current progress in backend: {backend.iteration} iterations.")
+                    pos = None
 
-            # print(len(save_chain))
-            print(f'vetor theta para verificacao:\n {best_pars} \n')
-            print(f"Total steps completed: {backend.iteration}")
-            group = original_group 
+                additional_chain_size = 10
+                print(f'Calibrating {group}, using model {model_extension.split("_")[-1]} | {version}')
 
-            # Separar as informações com base no grupo
-            for g in group:
-                if g == 'radiation_sensitive':
-                    # print('sensitive_chain')
-                    num_ic_sensitive = len(full_data['radiation_sensitive'])  
-                    labels_sensitive = ["a_s", "b_s", "d_s"] + [f"ic{i+1}" for i in range(num_ic_sensitive)] + ["std"]
-                    print(labels_sensitive)
-                    # Extrair parâmetros para control_sensitive
-                    chain_sensitive = save_chain[:, [0, 2, 4] + list(range(6, 6 + num_ic_sensitive)) + [-1]]  # rs, cc, ic1 até ic9, std           
-                    
-                    # Encontrar as posições corretas em best_pars para sensitive
-                    best_pars_sensitive = best_pars[[0, 2, 4] + list(range(6, 6 + num_ic_sensitive)) + [-1]]
-                    # print(f'best_pars_sensitive: {best_pars_sensitive}')
-
-                    # Salvar as informações da chain
-                    np.savetxt(f'./Output_Calibration/multi_chain_radiation_sensitive{model_extension}{version}.gz', chain_sensitive)
-                    np.savez(f'./Output_Calibration/multi_ll_pars_radiation_sensitive{model_extension}{version}.npz', max_ll=max(flat_ll), pars=best_pars_sensitive)
-                    
-                    # Plotar para o grupo control_sensitive
-                    plot_maxll_solution(
-                        f'./Output_Calibration/multi_ll_pars_radiation_sensitive{model_extension}{version}.npz',
-                        None,  # Não precisamos passar um arquivo para resistant neste momento
-                        full_data,
-                        nCols=4,
-                        show=False,
-                        save=True,
-                        figure_name=f'./Output_Calibration/multi_max_ll_radiation_sensitive{model_extension}'
+                with Pool(processes=cpu_count()) as pool:
+                    sampler = emcee.EnsembleSampler(
+                        nwalkers, ndim, log_probability,
+                        args=(l_bound, u_bound, model_extension, full_data, group, scenario),
+                        pool=pool,
+                        backend=backend
                     )
+                    if backend.iteration > 0:
+                        sampler.run_mcmc(None, additional_chain_size, progress=True)
+                    else:
+                        sampler.run_mcmc(pos, additional_chain_size, progress=True)
 
-                    # Gerar corner plot para control_sensitive
-                    fig_sensitive = corner.corner(chain_sensitive, labels=labels_sensitive, truths = best_pars_sensitive)
-                    plt.savefig(f'./Output_Calibration/multi_corner_radiation_sensitive{model_extension}{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
-                    plt.close()
+                flat_ll = sampler.get_log_prob(flat=True)
+                flat_chain = sampler.get_chain(flat=True)
+                max_pos = flat_ll.argmax(axis=0)
+                best_pars = flat_chain[max_pos]
 
-                    # Gerar gráfico das chains para control_sensitive
-                    fig, axes = plt.subplots(nrows=len(labels_sensitive), ncols=1, figsize=(10, len(labels_sensitive) * 2), sharex=True)
-                    axes = axes.ravel()
-                    # Pegar as cadeias completas
-                    samples = sampler.get_chain()
+                total_size = ((additional_chain_size - additional_chain_size // 4) * ndim * 2)
+                goal_size = 10000
+                scale_corner = max(1, total_size // goal_size)
+                save_chain = sampler.get_chain(discard=additional_chain_size // 4, flat=True, thin=scale_corner)
 
-                    indices_sensitive = [0, 2, 4] + list(range(6, 6 + num_ic_sensitive)) + [-1]  # Inclui `a_s`, `b_radiation`, `delay`, ICs, e `std`
+                print(f"Total steps completed: {backend.iteration}")
 
-                    # Obter as amostras corretas para 'radiation_sensitive'
-                    samples_sensitive = samples[:, :, indices_sensitive]  # Seleciona apenas os parâmetros relevantes para o grupo
+                for g in original_group:
+                    if g == 'radiation_sensitive':
+                        cols = [idx_map["a_s"], idx_map["b_s"], idx_map["d_s"]] + ics_s_idx + [std_idx]
+                        labels_sensitive = group_param_labels(scenario, g) + [f"ic{i+1}" for i in range(num_ic_sensitive)] + ["std"]
 
-                    for i in range(len(labels_sensitive)):
-                        ax = axes[i]
-                        ax.plot(samples_sensitive[:, :, i], "k", alpha=0.3)  # Plotar apenas os parâmetros filtrados
-                        ax.set_xlim(0, len(samples_sensitive))
-                        ax.set_ylabel(labels_sensitive[i])
-                        ax.yaxis.set_label_coords(-0.1, 0.5)
+                        chain_sensitive = save_chain[:, cols]
+                        best_pars_sensitive = best_pars[cols]
 
-                    axes[-1].set_xlabel("step number")
-                    plt.savefig(f'./Output_Calibration/multi_chain_radiation_sensitive{model_extension}{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
-                    plt.close()# Gerar a solução de máxima verossimilhança
-                
-                elif g == 'radiation_resistant':
-                    # print('resistant chain')
-                    # Extrair parâmetros para control_resistant
-                    num_ic_resistant = len(full_data['radiation_resistant'])  # Número de camundongos em 'radiation_resistant'
-                    labels_resistant = ["a_r", "b_r", "d_r"] + [f"ic{i+1}" for i in range(num_ic_resistant)] + ["std"]
-                    print(labels_resistant)
-                    chain_resistant = save_chain[:, [1, 3, 5] + list(range(6 + num_ic_sensitive, 6 + num_ic_sensitive + num_ic_resistant)) + [-1]]  # rr, cc, ic10 até ic14, std
-                    # print('chain_resistant', chain_resistant)
-                    # print('tamanho da chain:', len(chain_resistant[0])) 
-                    # Encontrar as posições corretas em best_pars para resistant
-                    best_pars_resistant = best_pars[[1, 3, 5] + list(range(6 + num_ic_sensitive, 6 + num_ic_sensitive + num_ic_resistant))  + [-1]]
-                    # print(f'best_pars_resistant: {best_pars_resistant}')
-                    
-                    
-                    # Salvar as informações da chain
-                    np.savetxt(f'./Output_Calibration/multi_chain_radiation_resistant{model_extension}{version}.gz', chain_resistant)
-                    np.savez(f'./Output_Calibration/multi_ll_pars_radiation_resistant{model_extension}{version}.npz', max_ll=max(flat_ll), pars=best_pars_resistant)
+                        np.savetxt(f'./Output_Calibration/multi_chain_radiation_sensitive{model_extension}_{version}.gz', chain_sensitive)
+                        np.savez(f'./Output_Calibration/multi_ll_pars_radiation_sensitive{model_extension}_{version}.npz', max_ll=max(flat_ll), pars=best_pars_sensitive)
 
-                    plot_maxll_solution(
-                        None,  # Não precisamos passar um arquivo para sensitive neste momento
-                        f'./Output_Calibration/multi_ll_pars_radiation_resistant{model_extension}{version}.npz',
-                        full_data,
-                        nCols=4,
-                        show=False,
-                        save=True,
-                        figure_name=f'./Output_Calibration/multi_max_ll_radiation_resistant{model_extension}'
-                    )
+                        plot_maxll_solution(
+                            f'./Output_Calibration/multi_ll_pars_radiation_sensitive{model_extension}_{version}.npz',
+                            None,
+                            full_data,
+                            nCols=4,
+                            show=False,
+                            save=True,
+                            figure_name=f'./Output_Calibration/multi_max_ll_radiation_sensitive{model_extension}_{version}'
+                        )
 
-                    # Gerar corner plot para control_resistant
-                    fig_resistant = corner.corner(chain_resistant, labels=labels_resistant, truths = best_pars_resistant)
-                    plt.savefig(f'./Output_Calibration/multi_corner_radiation_resistant{model_extension}{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
-                    plt.close()
+                        fig_sensitive = corner.corner(chain_sensitive, labels=labels_sensitive, truths=best_pars_sensitive)
+                        plt.savefig(f'./Output_Calibration/multi_corner_radiation_sensitive{model_extension}_{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
+                        plt.close()
 
-                    # Gerar gráfico das chains para control_resistant
-                    fig, axes = plt.subplots(nrows=len(labels_resistant), ncols=1, figsize=(10, len(labels_resistant) * 2), sharex=True)
-                    axes = axes.ravel()
-                    samples = sampler.get_chain()
+                        fig, axes = plt.subplots(nrows=len(labels_sensitive), ncols=1, figsize=(10, len(labels_sensitive) * 2), sharex=True)
+                        axes = axes.ravel()
+                        samples = sampler.get_chain()
+                        samples_sensitive = samples[:, :, cols]
+                        for i in range(len(labels_sensitive)):
+                            ax = axes[i]
+                            ax.plot(samples_sensitive[:, :, i], "k", alpha=0.3)
+                            ax.set_xlim(0, len(samples_sensitive))
+                            ax.set_ylabel(labels_sensitive[i])
+                            ax.yaxis.set_label_coords(-0.1, 0.5)
+                        axes[-1].set_xlabel("step number")
+                        plt.savefig(f'./Output_Calibration/multi_chain_radiation_sensitive{model_extension}_{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
+                        plt.close()
 
-                    
-                    indices_resistant = [1, 3, 5] + list(range(6 + num_ic_sensitive, 6 + num_ic_sensitive + num_ic_resistant))  + [-1]  # Inclui `a_s`, `b_radiation`, `delay`, ICs, e `std`
+                    elif g == 'radiation_resistant':
+                        cols = [idx_map["a_r"], idx_map["b_r"], idx_map["d_r"]] + ics_r_idx + [std_idx]
+                        labels_resistant = group_param_labels(scenario, g) + [f"ic{i+1}" for i in range(num_ic_resistant)] + ["std"]
 
-                    # Obter as amostras corretas para 'radiation_sensitive'
-                    samples_resistant = samples[:, :, indices_resistant]  # Seleciona apenas os parâmetros relevantes para o grupo
+                        chain_resistant = save_chain[:, cols]
+                        best_pars_resistant = best_pars[cols]
 
-                    # Ajuste os rótulos para os parâmetros `resistant`
-                    labels_resistant = ["a_r", "b_r", "d_r"] + [f"ic{i+1}" for i in range(num_ic_resistant)] + ["std"]
-                    # print("Labels para resistant:", labels_resistant)
-                    # print('camundongos no grupo resistant', num_ic_resistant)   
+                        np.savetxt(f'./Output_Calibration/multi_chain_radiation_resistant{model_extension}_{version}.gz', chain_resistant)
+                        np.savez(f'./Output_Calibration/multi_ll_pars_radiation_resistant{model_extension}_{version}.npz', max_ll=max(flat_ll), pars=best_pars_resistant)
 
-                    for i in range(len(labels_resistant)):
-                        ax = axes[i]
-                        ax.plot(samples_resistant[:, :, i], "k", alpha=0.3)  # Plotar apenas os parâmetros filtrados
-                        ax.set_xlim(0, len(samples_resistant))
-                        ax.set_ylabel(labels_resistant[i])
-                        ax.yaxis.set_label_coords(-0.1, 0.5)
+                        plot_maxll_solution(
+                            None,
+                            f'./Output_Calibration/multi_ll_pars_radiation_resistant{model_extension}_{version}.npz',
+                            full_data,
+                            nCols=4,
+                            show=False,
+                            save=True,
+                            figure_name=f'./Output_Calibration/multi_max_ll_radiation_resistant{model_extension}_{version}'
+                        )
 
-                    plt.savefig(f'./Output_Calibration/multi_chain_radiation_resistant{model_extension}{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
-                    plt.close()
+                        fig_resistant = corner.corner(chain_resistant, labels=labels_resistant, truths=best_pars_resistant)
+                        plt.savefig(f'./Output_Calibration/multi_corner_radiation_resistant{model_extension}_{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
+                        plt.close()
+
+                        fig, axes = plt.subplots(nrows=len(labels_resistant), ncols=1, figsize=(10, len(labels_resistant) * 2), sharex=True)
+                        axes = axes.ravel()
+                        samples = sampler.get_chain()
+                        samples_resistant = samples[:, :, cols]
+                        for i in range(len(labels_resistant)):
+                            ax = axes[i]
+                            ax.plot(samples_resistant[:, :, i], "k", alpha=0.3)
+                            ax.set_xlim(0, len(samples_resistant))
+                            ax.set_ylabel(labels_resistant[i])
+                            ax.yaxis.set_label_coords(-0.1, 0.5)
+                        plt.savefig(f'./Output_Calibration/multi_chain_radiation_resistant{model_extension}_{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
+                        plt.close()

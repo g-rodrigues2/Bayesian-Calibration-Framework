@@ -946,25 +946,25 @@ if __name__ == "__main__":
     run_calibration = True
     if run_calibration:
         for model_extension in [
-                                '_LQ',
+                                # '_LQ',
                                 '_ExponentialDecay',                               
-                                '_CumulativeDose', 
-                                '_AccelED', 
-                                '_AccelCD',
-                                '_CDwithLogFactor', 
-                                '_CDwithExpFactor', 
-                                '_CDwithSinFactor', 
-                                '_EDwithLogFactor', 
-                                '_EDwithExpFactor', 
-                                '_EDwithSinFactor',
-                                "_ExponentialDecayDelay",
-                                "_EDEFDelay",
-                                "_CumulativeDoseDelay",
-                                "_CDEFDelay",
-                                '_ACDDelay',
-                                '_AEDDelay',
-                                '_CDSFDelay',
-                                '_EDSFDelay'
+                                # '_CumulativeDose', 
+                                # '_AccelED', 
+                                # '_AccelCD',
+                                # '_CDwithLogFactor', 
+                                # '_CDwithExpFactor', 
+                                # '_CDwithSinFactor', 
+                                # '_EDwithLogFactor', 
+                                # '_EDwithExpFactor', 
+                                # '_EDwithSinFactor',
+                                # "_ExponentialDecayDelay",
+                                # "_EDEFDelay",
+                                # "_CumulativeDoseDelay",
+                                # "_CDEFDelay",
+                                # '_ACDDelay',
+                                # '_AEDDelay',
+                                # '_CDSFDelay',
+                                # '_EDSFDelay'
                                 ]:
 
             for group in ['radiation_sensitive', 'radiation_resistant']:
@@ -1007,7 +1007,7 @@ if __name__ == "__main__":
 
                     pos = None
 
-                additional_chain_size = 10
+                additional_chain_size = 50
 
                 print(f'Calibrating {group}, using model {model_extension.split("_")[-1]}')
 

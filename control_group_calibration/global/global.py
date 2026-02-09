@@ -755,7 +755,7 @@ if __name__ == "__main__":
 
                     pos = None
 
-                additional_chain_size = 100
+                additional_chain_size = 1000
 
                 print(f'Calibrating {group}, using model {model_extension.split("_")[-1]}')
 
