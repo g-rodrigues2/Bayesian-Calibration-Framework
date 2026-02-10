@@ -401,7 +401,7 @@ def model_CDEFDelay(y, t, growth_rate, carrying_capacity, a_radiation, b_radiati
     treatment_effect = 0
     cumulative_dose = 0
     for dose, tau in zip(dose_schedule, tau_radiation):
-        if t >= tau:
+        if t >= tau + delay:
             time_since_treatment = t - tau - delay
             exponential_factor = 1 - np.exp(-rate * time_since_treatment)
             cumulative_dose += dose
@@ -452,7 +452,7 @@ def model_EDEFDelay(y, t, growth_rate, carrying_capacity, a_radiation, b_radiati
 
     treatment_effect = 0
     for dose, tau in zip(dose_schedule, tau_radiation):
-        if t >= tau:
+        if t >= tau + delay:
             time_since_treatment = t - tau - delay
             exponential_factor = 1 - np.exp(-rate * time_since_treatment)
             treatment_effect += a_radiation * dose * exponential_factor * np.exp(-b_radiation * time_since_treatment)

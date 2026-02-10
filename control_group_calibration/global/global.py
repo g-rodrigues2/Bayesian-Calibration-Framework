@@ -493,11 +493,10 @@ def plot_maxll_solution_global(files_location, full_data, nCols=3, show=True, sa
 
     scatter_pairs = {}
     for group, best_chain in best_chain_per_group.items():
-        print(f"Processando: Grupo = {group}, Melhor ajuste encontrado com max_ll = {max_ll_per_group[group]}")
+        print(f"Processing: Group = {group}, Best fit found with max_ll = {max_ll_per_group[group]}")
 
         npzfile = np.load(best_chain)
         theta = npzfile['pars']
-        print(theta)
 
         nScenarios = len(full_data[group])
         nRows = int(np.ceil(nScenarios / nCols))

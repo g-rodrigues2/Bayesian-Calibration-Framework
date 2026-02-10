@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 import matplotlib.ticker as mticker
 from scipy.integrate import odeint
-import pdse_project as pdse
 import seaborn as sns
 import scipy.stats as stats
 import sys
@@ -37,6 +36,121 @@ for file in data_files:
         'treatment': treatment,
         'treatment_days': t_days
     })
+
+
+
+# Concordance Correlation Coefficient
+def ccc(x, y):
+    """
+    Calculate the Concordance Correlation Coefficient (CCC).
+
+    Parameters:
+    - x, y: Input data arrays
+
+    Returns:
+    - CCC value
+    """
+    x, y = np.asarray(x), np.asarray(y)
+    
+    if len(x) != len(y):
+        raise ValueError("Input arrays must have the same length")
+    
+    if x.size == 0 or y.size == 0:
+        raise ValueError("Input arrays must not be empty")
+    
+    mean_x, mean_y = np.mean(x), np.mean(y)
+    var_x, var_y = np.var(x), np.var(y)
+    
+    if var_x == 0 or var_y == 0:
+        raise ValueError("Input arrays must not have zero variance")
+    
+    covariance = np.cov(x, y, bias=True)[0, 1]
+    ccc_value = (2 * covariance) / (var_x + var_y + (mean_x - mean_y) ** 2)
+    
+    return ccc_value
+
+# Pearson Correlation Coefficient
+def pcc(x, y):
+    """
+    Calculate the Pearson Correlation Coefficient (PCC).
+
+    Parameters:
+    - x, y: Input data arrays
+
+    Returns:
+    - PCC value
+    """
+    x, y = np.asarray(x), np.asarray(y)
+    
+    if len(x) != len(y):
+        raise ValueError("Input arrays must have the same length")
+    
+    if x.size == 0 or y.size == 0:
+        raise ValueError("Input arrays must not be empty")
+    
+    mean_x, mean_y = np.mean(x), np.mean(y)
+    std_x, std_y = np.std(x), np.std(y)
+    
+    if std_x == 0 or std_y == 0:
+        raise ValueError("Input arrays must not have zero variance")
+    
+    covariance = np.cov(x, y, bias=True)[0, 1]
+    pcc_value = covariance / (std_x * std_y)
+    
+    return pcc_value
+
+# Normalized Root Mean Squared Error
+def nrmse(actual, pred): 
+    """
+    Calculate the Normalized Root Mean Squared Error (NRMSE).
+
+    Parameters:
+    - actual: Actual values
+    - pred: Predicted values
+
+    Returns:
+    - NRMSE value
+    """
+    actual, pred = np.asarray(actual), np.asarray(pred)
+    
+    if len(actual) != len(pred):
+        raise ValueError("Input arrays must have the same length")
+    
+    if actual.size == 0 or pred.size == 0:
+        raise ValueError("Input arrays must not be empty")
+    
+    rmse = np.sqrt(np.mean((actual - pred)**2))
+    nrmse_value = rmse / np.mean(actual) * 100
+    
+    return nrmse_value
+
+# Mean Absolute Percentage Error
+def mape(pred, actual): 
+    """
+    Calculate the Mean Absolute Percentage Error (MAPE).
+
+    Parameters:
+    - actual: Actual values
+    - pred: Predicted values
+
+    Returns:
+    - MAPE value
+    """
+    actual, pred = np.asarray(actual), np.asarray(pred)
+    
+    if len(actual) != len(pred):
+        raise ValueError("Input arrays must have the same length")
+    
+    if actual.size == 0 or pred.size == 0:
+        raise ValueError("Input arrays must not be empty")
+    
+    if np.any(actual == 0):
+        raise ValueError("Actual values must not contain zeros")
+    
+    mape_value = np.mean(np.abs((actual - pred) / actual)) * 100
+    
+    return mape_value
+
 
 
 @jit(nopython=True)
@@ -144,11 +258,83 @@ def find_max_time_per_group(full_data):
         max_times[group] = max_time
     return max_times
 
+def configure_plot_settings(fontsize):
+    plt.rcParams['font.size'] = fontsize
+    formatter = mticker.ScalarFormatter(useMathText=True)
+    formatter.set_powerlimits((-3, 2))
+    return formatter
+
+def finalize_plot(fig, axes, nScenarios, nCols, nRows, full_exp, full_model, save, show, figure_name, formatter):
+    final_exp = np.concatenate(full_exp, axis=0) if full_exp else np.array([])
+    final_model = np.concatenate(full_model, axis=0) if full_model else np.array([])
+
+    if final_exp.size == 0 or final_model.size == 0:
+        print("Error: One of the final arrays is empty.")
+        return
+
+    rounded_max = math.ceil(np.max(np.concatenate([final_exp, final_model])) / 1000) * 1000
+    for ax in axes[:nScenarios]:
+        ax.set_ylim((0, rounded_max))
+        ax.yaxis.set_major_formatter(formatter)
+    for i in range(nScenarios, nRows * nCols):
+        fig.delaxes(axes[i])
+    if save:
+        plt.savefig(figure_name + '.pdf', bbox_inches='tight', pad_inches=0.02)
+    if show:
+        plt.show()
+    else:
+        plt.close()
+
+def color_plot_scatter(final_exp, final_model, save, show, figure_name, formatter):
+    prop_cycle = plt.rcParams['axes.prop_cycle']
+    colors = prop_cycle.by_key()['color']
+    fig, ax = plt.subplots(figsize=(5, 5))
+    c = 1
+    all_cccs = []
+    for i in range(len(final_exp)):
+        all_cccs.append(ccc(final_model[i], final_exp[i]))
+        if all_cccs[-1] < 0.8:
+            ax.plot(final_exp[i], final_model[i], 'o', color=colors[c%len(colors)])
+            c += 1
+        else:
+            ax.plot(final_exp[i], final_model[i], 'o', color='black')
+    ax.set_xlabel('Data - Tumor volume (mm³)')
+    ax.set_ylabel('Model - Tumor volume (mm³)')
+    line = mlines.Line2D([0, 1], [0, 1], color='black', linestyle='dashed')
+    line.set_transform(ax.transAxes)
+    ax.add_line(line)
+    final_exp = np.concatenate(final_exp)
+    final_model = np.concatenate(final_model)
+    max_value = max((max(final_exp),max(final_model)))
+    max_value = math.ceil(max_value / 1000) * 1000
+    ticks = np.linspace(0, max_value, num=int(max_value/1000)+1)  # Adjust num for the desired number of ticks
+    
+    ax.set_ylim((0, max_value))
+    ax.set_xlim((0, max_value))
+    ax.set_xticks(ticks)
+    ax.set_yticks(ticks)
+    ax.yaxis.set_major_formatter(formatter)
+    ax.xaxis.set_major_formatter(formatter)
+    
+    pccT = pcc(final_model, final_exp)
+    cccT = ccc(final_model, final_exp)
+    mapeT = mape(final_model, final_exp)
+    all_cccs = np.array(all_cccs)
+    ax.text(0.025, .8, 'CCC/PCC = {:.2f}/{:.2f}\nMAPE = {:.2f}%\n CCC = {:.2f}$\pm${:.2f}'.format(cccT, pccT, mapeT, all_cccs.mean(), all_cccs.std()), horizontalalignment='left', transform=ax.transAxes)
+ 
+    if save:
+        plt.savefig(figure_name + '_sp.pdf', bbox_inches='tight', pad_inches=0.02)
+    if show:
+        plt.show()
+    else:
+        plt.close()
+    return
+
 def plot_maxll_solution(files_location_sensitive, files_location_resistant, full_data, nCols=3, show=True, save=True, fontsize='14', figure_name='maxll_figure'):
     if not show and not save:
         return
 
-    formatter = pdse.configure_plot_settings(fontsize)
+    formatter = configure_plot_settings(fontsize)
     plt.rcParams['font.size'] = fontsize
     formatter = mticker.ScalarFormatter(useMathText=True)
     formatter.set_powerlimits((-3, 2))
@@ -212,14 +398,14 @@ def plot_maxll_solution(files_location_sensitive, files_location_resistant, full
             full_model.append(matched_solution_volumes)
             full_exp.append(data[:, 1])
 
-            pccT = pdse.pcc(matched_solution_volumes, data[:, 1])
-            cccT = pdse.ccc(matched_solution_volumes, data[:, 1])
-            mapeT = pdse.mape(matched_solution_volumes, data[:, 1])
+            pccT = pcc(matched_solution_volumes, data[:, 1])
+            cccT = ccc(matched_solution_volumes, data[:, 1])
+            mapeT = mape(matched_solution_volumes, data[:, 1])
 
             ax.text(0.5, .05, f'CCC/PCC/MAPE = {cccT:.2f}/{pccT:.2f}/{mapeT:.2f}%', horizontalalignment='left', transform=ax.transAxes)
 
-        pdse.finalize_plot(fig, axes, nScenarios, nCols, nRows, full_exp, full_model, save, show, figure_name, formatter)
-        pdse.color_plot_scatter(full_exp, full_model, save, show, figure_name, formatter)
+        finalize_plot(fig, axes, nScenarios, nCols, nRows, full_exp, full_model, save, show, figure_name, formatter)
+        color_plot_scatter(full_exp, full_model, save, show, figure_name, formatter)
 
     return
 
@@ -291,7 +477,7 @@ if __name__ == "__main__":
     parser.add_argument("--sce4", action="store_true", help="Run Scenario 4: r global, K global")
     args = parser.parse_args()
 
-    selected_scenarios = [2]
+    selected_scenarios = [1, 2, 3, 4]
     if args.sce1: selected_scenarios.append(1)
     if args.sce2: selected_scenarios.append(2)
     if args.sce3: selected_scenarios.append(3)
@@ -343,7 +529,7 @@ if __name__ == "__main__":
                 ndim = len(l_bound)
                 nwalkers = 2 * ndim
 
-                filename = f"global_calibration_{tag}{model_extension}.h5"
+                filename = f"./reinitiate_files/global_calibration{model_extension}{tag}.h5"
 
                 if not os.path.exists(filename):
                     print("HDF5 file not found. Creating a new file...")
@@ -364,7 +550,7 @@ if __name__ == "__main__":
                     else:
                         pos = None
 
-                additional_chain_size = 100
+                additional_chain_size = 1000
                 print(f'Calibrating {group}, using model {model_extension.split("_")[-1]} | {tag}')
 
                 with Pool() as pool:
@@ -401,21 +587,21 @@ if __name__ == "__main__":
                         chain_sensitive = save_chain[:, cols]
                         best_pars_sensitive = best_pars[cols]
 
-                        np.savetxt(f'./Output_Calibration/multi_chain_control_sensitive{model_extension}_{tag}.gz', chain_sensitive)
-                        np.savez(f'./Output_Calibration/multi_ll_pars_control_sensitive{model_extension}_{tag}.npz', max_ll=max(flat_ll), pars=best_pars_sensitive)
+                        np.savetxt(f'./Output_Calibration/multi_chain_control_sensitive{model_extension}{tag}.gz', chain_sensitive)
+                        np.savez(f'./Output_Calibration/multi_ll_pars_control_sensitive{model_extension}{tag}.npz', max_ll=max(flat_ll), pars=best_pars_sensitive)
 
                         plot_maxll_solution(
-                            f'./Output_Calibration/multi_ll_pars_control_sensitive{model_extension}_{tag}.npz',
+                            f'./Output_Calibration/multi_ll_pars_control_sensitive{model_extension}{tag}.npz',
                             None,
                             full_data,
                             nCols=4,
                             show=False,
                             save=True,
-                            figure_name=f'./Output_Calibration/multi_max_ll_control_sensitive{model_extension}_{tag}'
+                            figure_name=f'./Output_Calibration/multi_max_ll_control_sensitive{model_extension}{tag}'
                         )
 
                         fig_sensitive = corner.corner(chain_sensitive, labels=labels_sensitive)
-                        plt.savefig(f'./Output_Calibration/multi_corner_control_sensitive{model_extension}_{tag}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
+                        plt.savefig(f'./Output_Calibration/multi_corner_control_sensitive{model_extension}{tag}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
                         plt.close()
 
                         fig, axes = plt.subplots(nrows=len(labels_sensitive), ncols=1, figsize=(10, len(labels_sensitive) * 2), sharex=True)
@@ -429,7 +615,7 @@ if __name__ == "__main__":
                             ax.set_ylabel(labels_sensitive[i])
                             ax.yaxis.set_label_coords(-0.1, 0.5)
                         axes[-1].set_xlabel("step number")
-                        plt.savefig(f'./Output_Calibration/multi_chain_control_sensitive{model_extension}_{tag}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
+                        plt.savefig(f'./Output_Calibration/multi_chain_control_sensitive{model_extension}{tag}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
                         plt.close()
 
                     elif g == 'control_resistant':
@@ -441,21 +627,21 @@ if __name__ == "__main__":
                         chain_resistant = save_chain[:, cols]
                         best_pars_resistant = best_pars[cols]
 
-                        np.savetxt(f'./Output_Calibration/multi_chain_control_resistant{model_extension}_{tag}.gz', chain_resistant)
-                        np.savez(f'./Output_Calibration/multi_ll_pars_control_resistant{model_extension}_{tag}.npz', max_ll=max(flat_ll), pars=best_pars_resistant)
+                        np.savetxt(f'./Output_Calibration/multi_chain_control_resistant{model_extension}{tag}.gz', chain_resistant)
+                        np.savez(f'./Output_Calibration/multi_ll_pars_control_resistant{model_extension}{tag}.npz', max_ll=max(flat_ll), pars=best_pars_resistant)
 
                         plot_maxll_solution(
                             None,
-                            f'./Output_Calibration/multi_ll_pars_control_resistant{model_extension}_{tag}.npz',
+                            f'./Output_Calibration/multi_ll_pars_control_resistant{model_extension}{tag}.npz',
                             full_data,
                             nCols=4,
                             show=False,
                             save=True,
-                            figure_name=f'./Output_Calibration/multi_max_ll_control_resistant{model_extension}_{tag}'
+                            figure_name=f'./Output_Calibration/multi_max_ll_control_resistant{model_extension}{tag}'
                         )
 
                         fig_resistant = corner.corner(chain_resistant, labels=labels_resistant)
-                        plt.savefig(f'./Output_Calibration/multi_corner_control_resistant{model_extension}_{tag}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
+                        plt.savefig(f'./Output_Calibration/multi_corner_control_resistant{model_extension}{tag}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
                         plt.close()
 
                         fig, axes = plt.subplots(nrows=len(labels_resistant), ncols=1, figsize=(10, len(labels_resistant) * 2), sharex=True)
@@ -468,5 +654,5 @@ if __name__ == "__main__":
                             ax.set_xlim(0, len(samples_resistant))
                             ax.set_ylabel(labels_resistant[i])
                             ax.yaxis.set_label_coords(-0.1, 0.5)
-                        plt.savefig(f'./Output_Calibration/multi_chain_control_resistant{model_extension}_{tag}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
+                        plt.savefig(f'./Output_Calibration/multi_chain_control_resistant{model_extension}{tag}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
                         plt.close()
