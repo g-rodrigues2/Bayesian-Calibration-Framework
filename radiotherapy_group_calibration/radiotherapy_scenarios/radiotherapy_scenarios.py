@@ -572,7 +572,7 @@ if __name__ == "__main__":
     parser.add_argument("--sce8", action="store_true")
     args = parser.parse_args()
 
-    selected_scenarios = []
+    selected_scenarios = [3, 4, 5, 6, 7, 8]
     if args.sce1: selected_scenarios.append(1)
     if args.sce2: selected_scenarios.append(2)
     if args.sce3: selected_scenarios.append(3)
@@ -629,7 +629,7 @@ if __name__ == "__main__":
                 ndim = len(l_bound)
                 nwalkers = 2 * ndim
 
-                filename = f"./reinitiate_files/calibration_{model_extension}_{version}.h5"
+                filename = f"./reinitiate_files/calibration{model_extension}{version}.h5"
 
                 if not os.path.exists(filename):
                     print("HDF5 file not found. Creating a new file....")
@@ -644,7 +644,7 @@ if __name__ == "__main__":
                     print(f"Current progress in backend: {backend.iteration} iterations.")
                     pos = None
 
-                additional_chain_size = 10
+                additional_chain_size = 100
                 print(f'Calibrating {group}, using model {model_extension.split("_")[-1]} | {version}')
 
                 with Pool(processes=cpu_count()) as pool:
@@ -679,21 +679,21 @@ if __name__ == "__main__":
                         chain_sensitive = save_chain[:, cols]
                         best_pars_sensitive = best_pars[cols]
 
-                        np.savetxt(f'./Output_Calibration/multi_chain_radiation_sensitive{model_extension}_{version}.gz', chain_sensitive)
-                        np.savez(f'./Output_Calibration/multi_ll_pars_radiation_sensitive{model_extension}_{version}.npz', max_ll=max(flat_ll), pars=best_pars_sensitive)
+                        np.savetxt(f'./Output_Calibration/multi_chain_radiation_sensitive{model_extension}{version}.gz', chain_sensitive)
+                        np.savez(f'./Output_Calibration/multi_ll_pars_radiation_sensitive{model_extension}{version}.npz', max_ll=max(flat_ll), pars=best_pars_sensitive)
 
                         plot_maxll_solution(
-                            f'./Output_Calibration/multi_ll_pars_radiation_sensitive{model_extension}_{version}.npz',
+                            f'./Output_Calibration/multi_ll_pars_radiation_sensitive{model_extension}{version}.npz',
                             None,
                             full_data,
                             nCols=4,
                             show=False,
                             save=True,
-                            figure_name=f'./Output_Calibration/multi_max_ll_radiation_sensitive{model_extension}_{version}'
+                            figure_name=f'./Output_Calibration/multi_max_ll_radiation_sensitive{model_extension}{version}'
                         )
 
                         fig_sensitive = corner.corner(chain_sensitive, labels=labels_sensitive, truths=best_pars_sensitive)
-                        plt.savefig(f'./Output_Calibration/multi_corner_radiation_sensitive{model_extension}_{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
+                        plt.savefig(f'./Output_Calibration/multi_corner_radiation_sensitive{model_extension}{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
                         plt.close()
 
                         fig, axes = plt.subplots(nrows=len(labels_sensitive), ncols=1, figsize=(10, len(labels_sensitive) * 2), sharex=True)
@@ -707,7 +707,7 @@ if __name__ == "__main__":
                             ax.set_ylabel(labels_sensitive[i])
                             ax.yaxis.set_label_coords(-0.1, 0.5)
                         axes[-1].set_xlabel("step number")
-                        plt.savefig(f'./Output_Calibration/multi_chain_radiation_sensitive{model_extension}_{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
+                        plt.savefig(f'./Output_Calibration/multi_chain_radiation_sensitive{model_extension}{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
                         plt.close()
 
                     elif g == 'radiation_resistant':
@@ -717,21 +717,21 @@ if __name__ == "__main__":
                         chain_resistant = save_chain[:, cols]
                         best_pars_resistant = best_pars[cols]
 
-                        np.savetxt(f'./Output_Calibration/multi_chain_radiation_resistant{model_extension}_{version}.gz', chain_resistant)
-                        np.savez(f'./Output_Calibration/multi_ll_pars_radiation_resistant{model_extension}_{version}.npz', max_ll=max(flat_ll), pars=best_pars_resistant)
+                        np.savetxt(f'./Output_Calibration/multi_chain_radiation_resistant{model_extension}{version}.gz', chain_resistant)
+                        np.savez(f'./Output_Calibration/multi_ll_pars_radiation_resistant{model_extension}{version}.npz', max_ll=max(flat_ll), pars=best_pars_resistant)
 
                         plot_maxll_solution(
                             None,
-                            f'./Output_Calibration/multi_ll_pars_radiation_resistant{model_extension}_{version}.npz',
+                            f'./Output_Calibration/multi_ll_pars_radiation_resistant{model_extension}{version}.npz',
                             full_data,
                             nCols=4,
                             show=False,
                             save=True,
-                            figure_name=f'./Output_Calibration/multi_max_ll_radiation_resistant{model_extension}_{version}'
+                            figure_name=f'./Output_Calibration/multi_max_ll_radiation_resistant{model_extension}{version}'
                         )
 
                         fig_resistant = corner.corner(chain_resistant, labels=labels_resistant, truths=best_pars_resistant)
-                        plt.savefig(f'./Output_Calibration/multi_corner_radiation_resistant{model_extension}_{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
+                        plt.savefig(f'./Output_Calibration/multi_corner_radiation_resistant{model_extension}{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
                         plt.close()
 
                         fig, axes = plt.subplots(nrows=len(labels_resistant), ncols=1, figsize=(10, len(labels_resistant) * 2), sharex=True)
@@ -744,5 +744,5 @@ if __name__ == "__main__":
                             ax.set_xlim(0, len(samples_resistant))
                             ax.set_ylabel(labels_resistant[i])
                             ax.yaxis.set_label_coords(-0.1, 0.5)
-                        plt.savefig(f'./Output_Calibration/multi_chain_radiation_resistant{model_extension}_{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
+                        plt.savefig(f'./Output_Calibration/multi_chain_radiation_resistant{model_extension}{version}.png', format='png', dpi=300, bbox_inches='tight', pad_inches=0.02)
                         plt.close()
