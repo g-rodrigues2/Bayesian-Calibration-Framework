@@ -1,0 +1,7 @@
+group,mouse,model,cob_preditiva,cob_curva,dentro_curva,total
+io_sensitive,c0_m28,_ExponentialDecay,1.0000,1.0000,19,19
+io_sensitive,c0_m35,_ExponentialDecay,0.4615,0.4231,11,26
+io_sensitive,c0_m3,_ExponentialDecay,1.0000,1.0000,16,16
+io_sensitive,c0_m28,_MichaelisMenten,1.0000,1.0000,19,19
+io_sensitive,c0_m35,_MichaelisMenten,0.6538,0.6154,16,26
+io_sensitive,c0_m3,_MichaelisMenten,1.0000,1.0000,16,16

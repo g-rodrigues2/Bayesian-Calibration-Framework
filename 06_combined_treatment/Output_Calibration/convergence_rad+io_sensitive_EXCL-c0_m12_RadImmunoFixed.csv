@@ -1,0 +1,2 @@
+steps,stuck_walkers,tau_max,min_steps_over_tau,max_rhat,converged
+20030,0,280.1,53.64,1.027,True

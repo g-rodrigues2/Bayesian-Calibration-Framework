@@ -1,8 +1,20 @@
 __pycache__/
-*.pyc
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+*.log
+output.*
+error.*
+
+# Resumable backends: only used to extend a chain, not to reproduce a result.
+# The thinned chains (Output_Calibration/*.gz) ARE part of this repository.
+*.h5
+reinitiate_files/
+
+# local environments
 .venv/
 venv/
 .env
-*.log
 .DS_Store
-.ipynb_checkpoints/
+Thumbs.db
+~$*

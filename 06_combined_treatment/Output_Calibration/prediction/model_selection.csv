@@ -1,0 +1,2 @@
+model,k,n,max_ll,AICc,BIC,w_BIC
+_RadImmunoFixed,16,379,-2223.5046,4480.5120,4542.0099,1.0000

@@ -1,0 +1,20 @@
+# Text files are stored with LF in the repository, whatever the checkout platform does locally.
+* text=auto
+
+*.py   text eol=lf
+*.jl   text eol=lf
+*.md   text eol=lf
+*.txt  text eol=lf
+*.csv  text eol=lf
+*.cff  text eol=lf
+*.ini  text eol=lf
+*.slurm text eol=lf
+
+# Binary payloads: never converted, never diffed as text.
+*.npz  binary
+*.h5   binary
+*.gz   binary
+*.png  binary
+*.pdf  binary
+*.xlsx binary
+*.ipynb -text

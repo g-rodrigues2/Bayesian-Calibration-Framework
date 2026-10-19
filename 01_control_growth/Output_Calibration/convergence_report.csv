@@ -1,0 +1,15 @@
+group,mouse,model,ndim,nwalkers,n_iter,n_stuck,tau_max,tau_med,ESS,acceptance,ll_max,ll_med,ll_spread,ll_tail,flags,severity
+control_sensitive,-,_exp,11,44,30000,0,160.848,124.500,139.884,0.399,-1141.421,-1146.640,5.219,4.981,ok,0
+control_sensitive,-,_mendel,12,48,30000,0,1392.009,670.802,16.164,0.248,-1137.935,-1143.502,5.567,5.131,"tau-alto,ESS-baixo",2
+control_sensitive,-,_bert,12,48,30000,5,874.334,701.040,25.734,0.277,-1141.231,-1147.834,6.603,275.513,"tau-alto,ESS-baixo,walkers-presos",3
+control_sensitive,-,_lin,12,48,30000,0,1005.951,866.914,22.367,0.169,-1371.006,-1377.834,6.828,5.349,"tau-alto,ESS-baixo",2
+control_sensitive,-,_gomp,13,52,30000,4,776.395,583.546,28.980,0.280,-1150.784,-1157.638,6.853,164.071,"tau-alto,ESS-baixo,walkers-presos",3
+control_sensitive,-,_surf,12,48,30000,0,227.909,179.130,98.724,0.359,-1135.893,-1141.654,5.760,5.138,ESS-baixo,1
+control_sensitive,-,_log,12,48,30000,0,854.167,477.046,26.341,0.321,-1132.640,-1138.853,6.213,5.496,"tau-alto,ESS-baixo",2
+control_resistant,-,_exp,7,28,30000,0,99.264,88.497,226.668,0.485,-678.774,-682.078,3.304,4.101,ok,0
+control_resistant,-,_mendel,8,32,30000,3,802.880,606.085,28.024,0.287,-655.375,-659.177,3.802,220.800,"tau-alto,ESS-baixo,walkers-presos",3
+control_resistant,-,_bert,8,32,30000,4,1258.386,949.245,17.880,0.317,-654.903,-658.898,3.995,235.596,"tau-alto,ESS-baixo,walkers-presos",3
+control_resistant,-,_lin,8,32,30000,0,491.019,435.527,45.823,0.222,-871.054,-875.441,4.386,3.843,ESS-baixo,1
+control_resistant,-,_gomp,9,36,30000,2,518.285,392.959,43.412,0.333,-689.662,-695.761,6.099,118.580,"ESS-baixo,walkers-presos",2
+control_resistant,-,_surf,8,32,30000,0,172.431,151.013,130.487,0.413,-655.086,-658.648,3.563,4.087,ok,0
+control_resistant,-,_log,8,32,30000,2,738.969,566.002,30.448,0.404,-638.632,-642.614,3.982,6.383,"tau-alto,ESS-baixo,walkers-presos",3

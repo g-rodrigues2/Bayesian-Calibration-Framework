@@ -1,0 +1,5 @@
+row,column,stored_ll,refined_ll,bic_stored,bic_refined,w_stored,w_refined,block
+s1,Scenario 1,-1774.6723,-1774.6665,3656.6751,3656.6635,0.0560,0.0562,control
+s2,Scenario 2,-1774.6767,-1774.6735,3651.0350,3651.0285,0.9399,0.9398,control
+s3,Scenario 3,-1780.1154,-1780.1136,3661.9123,3661.9087,0.0041,0.0041,control
+s4,Scenario 4,-1794.4386,-1793.5465,3684.9098,3683.1256,0.0000,0.0000,control

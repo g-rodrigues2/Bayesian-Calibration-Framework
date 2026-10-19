@@ -1,0 +1,3 @@
+group,mouse,model,k,n,max_ll,AICc,dAICc,w_AICc,BIC,dBIC,w_BIC
+radiation_resistant,c1_m1,_ExponentialDecay,4,19,-100.6538,212.1647,0.0000,1.0000,213.0853,0.0000,1.0000
+radiation_resistant,c1_m3,_ExponentialDecay,4,9,-33.0113,84.0225,0.0000,1.0000,74.8114,0.0000,1.0000

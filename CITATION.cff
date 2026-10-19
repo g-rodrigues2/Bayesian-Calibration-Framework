@@ -1,0 +1,67 @@
+cff-version: 1.2.0
+message: "If you use this code or data, please cite the deposit below, the thesis, and the article in the references."
+title: "Bayesian calibration of a biology-based mathematical model using [89Zr]-CD8 PET imaging and tumor volume changes to characterize therapeutic response to radiation and immunotherapy in triple-negative breast cancer (code and data)"
+type: software
+license: MIT
+# doi: filled in when the Zenodo record is published
+# repository-code: "https://github.com/g-rodrigues2/tnbc-cd8-pet-bayesian-calibration"
+authors:
+  - family-names: Rodrigues
+    given-names: Guilherme
+    affiliation: "São Paulo State University (UNESP), Institute of Biosciences, Botucatu"
+    orcid: "https://orcid.org/0000-0001-7113-8937"
+abstract: >-
+  Code and data of Chapter 4 of the doctoral thesis: sequential Bayesian calibration, model selection and
+  predictive validation of ordinary differential equation models of triple-negative breast cancer in 4T1
+  and RR-4T1 murine tumors under radiotherapy, immunotherapy and their combination, including the
+  incorporation of the standardized uptake value of [89Zr]-CD8 PET into the immune-mediated lysis term
+  and its leave-one-out predictive assessment.
+keywords:
+  - mathematical oncology
+  - triple-negative breast cancer
+  - radiotherapy
+  - immunotherapy
+  - Bayesian calibration
+  - model selection
+  - immunoPET
+  - leave-one-out cross-validation
+preferred-citation:
+  type: thesis
+  title: "Mathematical models to describe tumoral behaviors under treatment regimens"
+  authors:
+    - family-names: Rodrigues
+      given-names: Guilherme
+      orcid: "https://orcid.org/0000-0001-7113-8937"
+  thesis-type: "PhD thesis"
+  institution:
+    name: "São Paulo State University (UNESP), Graduate Program in Biometrics"
+    city: Botucatu
+    country: BR
+  year: 2026
+references:
+  - type: article
+    title: "CD8 immunoPET imaging to stratify response and guide combination immunotherapy and radiation in triple negative breast cancer"
+    authors:
+      - family-names: Song
+        given-names: P. N.
+      - family-names: DeMellier
+        given-names: C. T.
+      - family-names: Lynch
+        given-names: S. E.
+      - family-names: Gallegos
+        given-names: C. A.
+      - family-names: Mansur
+        given-names: A.
+      - family-names: Moye
+        given-names: J. A.
+      - family-names: Mascioni
+        given-names: A.
+      - family-names: Jia
+        given-names: F.
+      - family-names: Willey
+        given-names: C. D.
+      - family-names: Sorace
+        given-names: A. G.
+    journal: "Breast Cancer Research"
+    year: 2026
+    doi: 10.1186/s13058-026-02286-9

@@ -1,0 +1,2 @@
+scenario,compart,k,n,max_ll,AIC,dAIC,w_AIC,AICc,dAICc,w_AICc,BIC,dBIC,w_BIC,DIC,dDIC,w_DIC,p_D,WAIC,dWAIC,w_WAIC,p_waic,waic_high_var_points,LOO,dLOO,w_LOO,p_loo,khat_max,khat_bad_frac,WBIC,dWBIC,w_WBIC,WBIC_ESS
+V2,"alpha_rad=compartilhado, beta_rad=por grupo, delay=compartilhado",29,505,-2939.4975,5936.9950,0.0000,1.0000,5940.6582,0.0000,1.0000,6059.5072,0.0000,1.0000,5930.5831,0.0000,1.0000,27.1034,5943.6165,0.0000,1.0000,36.1888,,5944.3702,0.0000,1.0000,36.5656,0.7530,,5937.6846,0.0000,1.0000,1.4065

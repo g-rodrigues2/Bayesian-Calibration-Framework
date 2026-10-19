@@ -1,0 +1,27 @@
+{
+  "title": "Bayesian calibration of a biology-based mathematical model using [89Zr]-CD8 PET imaging and tumor volume changes to characterize therapeutic response to radiation and immunotherapy in triple-negative breast cancer (code and data)",
+  "upload_type": "software",
+  "license": "mit-license",
+  "creators": [
+    {
+      "name": "Rodrigues, Guilherme",
+      "affiliation": "São Paulo State University (UNESP), Institute of Biosciences, Botucatu, Brazil",
+      "orcid": "0000-0001-7113-8937"
+    }
+  ],
+  "description": "<p>Code and data of the article of the same name and of Chapter 4 of the doctoral thesis <em>Mathematical models to describe tumoral behaviors under treatment regimens</em> (Graduate Program in Biometrics, Institute of Biosciences, S&atilde;o Paulo State University, Botucatu, 2026).</p><p>The deposit covers the sequential Bayesian calibration of ordinary differential equation models of triple-negative breast cancer in 4T1 (radiation-sensitive) and RR-4T1 (radiation-resistant) murine tumors: seven growth laws fitted to the untreated controls, nineteen radiotherapy-effect formulations, twelve immunotherapy-effect formulations, the parameter-sharing scenarios between phenotypes, the out-of-sample prediction of the combined radiotherapy plus immunotherapy cohort, the replacement of the constant tumor-lysis rate by a function of the standardized uptake value of [89Zr]-CD8 PET, and its leave-one-out predictive assessment. It also contains the verification of the maximum log-likelihoods behind every BIC table of the chapter (670 cells), the prior predictive checks and the profile-likelihood analysis of the immunotherapy parameters.</p><p>Each folder has a README with its structure, and REPRODUCE.md gives the command that produces each figure and table. The thinned posterior chains are included, so every figure and table can be redrawn from this deposit; the walker-resolved chains, from which the convergence diagnostics of the appendix are computed, are deposited separately because of their size.</p>",
+  "keywords": [
+    "mathematical oncology",
+    "triple-negative breast cancer",
+    "radiotherapy",
+    "immunotherapy",
+    "Bayesian calibration",
+    "model selection",
+    "immunoPET",
+    "CD8 T cells",
+    "leave-one-out cross-validation",
+    "ordinary differential equations"
+  ],
+  "language": "eng",
+  "access_right": "open"
+}

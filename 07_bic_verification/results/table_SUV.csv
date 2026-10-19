@@ -1,0 +1,4 @@
+,,stored,stored,stored,stored,refined,refined,refined,refined
+column,,Linear,Logistic,Michaelis-Menten,Saturating exponential,Linear,Logistic,Michaelis-Menten,Saturating exponential
+block,row,,,,,,,,
+rad+io_sensitive,Global,4514.6126,,4531.5084,4533.1762,4511.0618,4531.4056,4530.9633,4527.9986
