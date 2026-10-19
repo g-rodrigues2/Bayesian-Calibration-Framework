@@ -3,13 +3,39 @@ message: "If you use this code or data, please cite the deposit below, the thesi
 title: "Bayesian calibration of a biology-based mathematical model using [89Zr]-CD8 PET imaging and tumor volume changes to characterize therapeutic response to radiation and immunotherapy in triple-negative breast cancer (code and data)"
 type: software
 license: MIT
-# doi: filled in when the Zenodo record is published
+version: 1.0.0
+date-released: 2026-10-19
+doi: 10.5281/zenodo.23481163
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.23481162
+    description: "Concept DOI, which resolves to the latest version of the deposit"
 repository-code: "https://github.com/g-rodrigues2/Bayesian-Calibration-Framework"
 authors:
   - family-names: Rodrigues
-    given-names: Guilherme
-    affiliation: "São Paulo State University (UNESP), Institute of Biosciences, Botucatu"
+    given-names: "Guilherme"
+    affiliation: "Graduate Program in Biometrics, Institute of Biosciences, São Paulo State University (UNESP), Botucatu, Brazil"
     orcid: "https://orcid.org/0000-0001-7113-8937"
+  - family-names: Mancera
+    given-names: "Paulo F. A."
+    affiliation: "Department of Biodiversity and Biostatistics, Institute of Biosciences, São Paulo State University (UNESP), Botucatu, Brazil"
+    orcid: "https://orcid.org/0000-0002-2080-8053"
+  - family-names: Sorace
+    given-names: "Anna G."
+    affiliation: "Department of Radiology and Department of Biomedical Engineering, The University of Alabama at Birmingham, Birmingham, Alabama, USA"
+    orcid: "https://orcid.org/0000-0002-3640-3966"
+  - family-names: Song
+    given-names: "Patrick N."
+    affiliation: "Department of Radiology and Department of Biomedical Engineering, The University of Alabama at Birmingham, Birmingham, Alabama, USA"
+    orcid: "https://orcid.org/0000-0002-1545-0886"
+  - family-names: Yankeelov
+    given-names: "Thomas E."
+    affiliation: "Oden Institute for Computational Engineering and Sciences, The University of Texas at Austin, Austin, Texas, USA"
+    orcid: "https://orcid.org/0000-0001-6201-3913"
+  - family-names: Lima
+    given-names: "Ernesto A. B. F."
+    affiliation: "Texas Advanced Computing Center, The University of Texas at Austin, Austin, Texas, USA"
+    orcid: "https://orcid.org/0000-0002-9219-8784"
 abstract: >-
   Code and data of Chapter 4 of the doctoral thesis: sequential Bayesian calibration, model selection and
   predictive validation of ordinary differential equation models of triple-negative breast cancer in 4T1
@@ -39,6 +65,24 @@ preferred-citation:
     country: BR
   year: 2026
 references:
+  - type: article
+    title: "Bayesian calibration of a biology-based mathematical model using [89Zr]-CD8 PET imaging and tumor volume changes to characterize therapeutic response to radiation and immunotherapy in triple-negative breast cancer"
+    authors:
+      - family-names: Rodrigues
+        given-names: "Guilherme"
+      - family-names: Mancera
+        given-names: "Paulo F. A."
+      - family-names: Sorace
+        given-names: "Anna G."
+      - family-names: Song
+        given-names: "Patrick N."
+      - family-names: Yankeelov
+        given-names: "Thomas E."
+      - family-names: Lima
+        given-names: "Ernesto A. B. F."
+    journal: "Mathematical Biosciences"
+    year: 2026
+    notes: "Submitted"
   - type: article
     title: "CD8 immunoPET imaging to stratify response and guide combination immunotherapy and radiation in triple negative breast cancer"
     authors:

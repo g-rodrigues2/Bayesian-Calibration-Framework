@@ -68,6 +68,8 @@ def _labels(npz, ndim, name):
         return ['ic', 'std']
     if name.endswith('_SUVLinear.h5'):
         return ['a', 'b'] + [f'ic{i + 1}' for i in range(ndim - 3)] + ['std']
+    if name.endswith('_RadImmunoFitD.h5'):
+        return ['d'] + [f'ic{i + 1}' for i in range(ndim - 2)] + ['std']
     return [f'ic{i + 1}' for i in range(ndim - 1)] + ['std']
 
 

@@ -5,8 +5,33 @@
   "creators": [
     {
       "name": "Rodrigues, Guilherme",
-      "affiliation": "São Paulo State University (UNESP), Institute of Biosciences, Botucatu, Brazil",
+      "affiliation": "Graduate Program in Biometrics, Institute of Biosciences, São Paulo State University (UNESP), Botucatu, Brazil",
       "orcid": "0000-0001-7113-8937"
+    },
+    {
+      "name": "Mancera, Paulo F. A.",
+      "affiliation": "Department of Biodiversity and Biostatistics, Institute of Biosciences, São Paulo State University (UNESP), Botucatu, Brazil",
+      "orcid": "0000-0002-2080-8053"
+    },
+    {
+      "name": "Sorace, Anna G.",
+      "affiliation": "Department of Radiology and Department of Biomedical Engineering, The University of Alabama at Birmingham, Birmingham, Alabama, USA",
+      "orcid": "0000-0002-3640-3966"
+    },
+    {
+      "name": "Song, Patrick N.",
+      "affiliation": "Department of Radiology and Department of Biomedical Engineering, The University of Alabama at Birmingham, Birmingham, Alabama, USA",
+      "orcid": "0000-0002-1545-0886"
+    },
+    {
+      "name": "Yankeelov, Thomas E.",
+      "affiliation": "Oden Institute for Computational Engineering and Sciences, The University of Texas at Austin, Austin, Texas, USA",
+      "orcid": "0000-0001-6201-3913"
+    },
+    {
+      "name": "Lima, Ernesto A. B. F.",
+      "affiliation": "Texas Advanced Computing Center, The University of Texas at Austin, Austin, Texas, USA",
+      "orcid": "0000-0002-9219-8784"
     }
   ],
   "description": "<p>Code and data of the article of the same name and of Chapter 4 of the doctoral thesis <em>Mathematical models to describe tumoral behaviors under treatment regimens</em> (Graduate Program in Biometrics, Institute of Biosciences, S&atilde;o Paulo State University, Botucatu, 2026).</p><p>The deposit covers the sequential Bayesian calibration of ordinary differential equation models of triple-negative breast cancer in 4T1 (radiation-sensitive) and RR-4T1 (radiation-resistant) murine tumors: seven growth laws fitted to the untreated controls, nineteen radiotherapy-effect formulations, twelve immunotherapy-effect formulations, the parameter-sharing scenarios between phenotypes, the out-of-sample prediction of the combined radiotherapy plus immunotherapy cohort, the replacement of the constant tumor-lysis rate by a function of the standardized uptake value of [89Zr]-CD8 PET, and its leave-one-out predictive assessment. It also contains the verification of the maximum log-likelihoods behind every BIC table of the chapter (670 cells), the prior predictive checks and the profile-likelihood analysis of the immunotherapy parameters.</p><p>Each folder has a README with its structure, and REPRODUCE.md gives the command that produces each figure and table. The thinned posterior chains are included, so every figure and table can be redrawn from this deposit; the walker-resolved chains, from which the convergence diagnostics of the appendix are computed, are deposited separately because of their size.</p>",
