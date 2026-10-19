@@ -1,0 +1,658 @@
+[
+ {
+  "file": "01_control_growth/reinitiate_control_sensitive_log.npz",
+  "steps": 70000,
+  "walkers": 48,
+  "parameters": 12,
+  "stuck": 0,
+  "megabytes": 15.2
+ },
+ {
+  "file": "01_control_growth/reinitiate_control_resistant_log.npz",
+  "steps": 30000,
+  "walkers": 32,
+  "parameters": 8,
+  "stuck": 2,
+  "megabytes": 2.9
+ },
+ {
+  "file": "02_control_sharing_scenarios/reinitiate__log_s2.npz",
+  "steps": 30000,
+  "walkers": 72,
+  "parameters": 18,
+  "stuck": 0,
+  "megabytes": 14.3
+ },
+ {
+  "file": "04_radiotherapy_sharing_scenarios/reinitiate__ExponentialDecayDelay_V2.npz",
+  "steps": 80000,
+  "walkers": 58,
+  "parameters": 29,
+  "stuck": 0,
+  "megabytes": 46.0
+ },
+ {
+  "file": "05_immunotherapy/reinitiate_io_sensitive_dePillisRadunskayaLaw_log-d-s.npz",
+  "steps": 20000,
+  "walkers": 42,
+  "parameters": 7,
+  "stuck": 0,
+  "megabytes": 2.3
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_RadImmunoFixed.npz",
+  "steps": 29517,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 5.2
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_SUVLinear.npz",
+  "steps": 50000,
+  "walkers": 36,
+  "parameters": 18,
+  "stuck": 2,
+  "megabytes": 11.0
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m10_RadImmunoFitD.npz",
+  "steps": 60000,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 10.6
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m10_RadImmunoFixed.npz",
+  "steps": 20050,
+  "walkers": 30,
+  "parameters": 15,
+  "stuck": 0,
+  "megabytes": 3.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m10_SUVLinear.npz",
+  "steps": 50530,
+  "walkers": 34,
+  "parameters": 17,
+  "stuck": 2,
+  "megabytes": 10.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m11_RadImmunoFitD.npz",
+  "steps": 40000,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 7.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m11_RadImmunoFixed.npz",
+  "steps": 30030,
+  "walkers": 30,
+  "parameters": 15,
+  "stuck": 0,
+  "megabytes": 4.7
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m11_SUVLinear.npz",
+  "steps": 51042,
+  "walkers": 34,
+  "parameters": 17,
+  "stuck": 4,
+  "megabytes": 9.9
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m12_RadImmunoFitD.npz",
+  "steps": 60000,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 10.7
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m12_RadImmunoFixed.npz",
+  "steps": 20030,
+  "walkers": 30,
+  "parameters": 15,
+  "stuck": 0,
+  "megabytes": 3.2
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m12_SUVLinear.npz",
+  "steps": 70520,
+  "walkers": 34,
+  "parameters": 17,
+  "stuck": 2,
+  "megabytes": 13.8
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m13_RadImmunoFitD.npz",
+  "steps": 40000,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 7.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m13_RadImmunoFixed.npz",
+  "steps": 30030,
+  "walkers": 30,
+  "parameters": 15,
+  "stuck": 0,
+  "megabytes": 4.7
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m13_SUVLinear.npz",
+  "steps": 50020,
+  "walkers": 34,
+  "parameters": 17,
+  "stuck": 1,
+  "megabytes": 10.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m17_RadImmunoFitD.npz",
+  "steps": 40000,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 7.2
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m17_RadImmunoFixed.npz",
+  "steps": 20030,
+  "walkers": 30,
+  "parameters": 15,
+  "stuck": 0,
+  "megabytes": 3.2
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m17_SUVLinear.npz",
+  "steps": 50020,
+  "walkers": 34,
+  "parameters": 17,
+  "stuck": 2,
+  "megabytes": 10.0
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m18_RadImmunoFitD.npz",
+  "steps": 60000,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 10.7
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m18_RadImmunoFixed.npz",
+  "steps": 30030,
+  "walkers": 30,
+  "parameters": 15,
+  "stuck": 0,
+  "megabytes": 4.7
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m18_SUVLinear.npz",
+  "steps": 40020,
+  "walkers": 34,
+  "parameters": 17,
+  "stuck": 1,
+  "megabytes": 8.2
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m19_RadImmunoFitD.npz",
+  "steps": 40000,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 7.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m19_RadImmunoFixed.npz",
+  "steps": 30030,
+  "walkers": 30,
+  "parameters": 15,
+  "stuck": 0,
+  "megabytes": 4.7
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m19_SUVLinear.npz",
+  "steps": 50020,
+  "walkers": 34,
+  "parameters": 17,
+  "stuck": 1,
+  "megabytes": 10.0
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m20_RadImmunoFitD.npz",
+  "steps": 40000,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 7.2
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m20_RadImmunoFixed.npz",
+  "steps": 30030,
+  "walkers": 30,
+  "parameters": 15,
+  "stuck": 0,
+  "megabytes": 4.7
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m20_SUVLinear.npz",
+  "steps": 50020,
+  "walkers": 34,
+  "parameters": 17,
+  "stuck": 1,
+  "megabytes": 10.2
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m22_RadImmunoFitD.npz",
+  "steps": 40000,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 7.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m22_RadImmunoFixed.npz",
+  "steps": 20030,
+  "walkers": 30,
+  "parameters": 15,
+  "stuck": 0,
+  "megabytes": 3.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m22_SUVLinear.npz",
+  "steps": 50020,
+  "walkers": 34,
+  "parameters": 17,
+  "stuck": 1,
+  "megabytes": 10.0
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m25_RadImmunoFitD.npz",
+  "steps": 40000,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 7.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m25_RadImmunoFixed.npz",
+  "steps": 30010,
+  "walkers": 30,
+  "parameters": 15,
+  "stuck": 0,
+  "megabytes": 4.7
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m25_SUVLinear.npz",
+  "steps": 60020,
+  "walkers": 34,
+  "parameters": 17,
+  "stuck": 1,
+  "megabytes": 11.9
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m26_RadImmunoFitD.npz",
+  "steps": 40000,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 7.3
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m26_RadImmunoFixed.npz",
+  "steps": 20010,
+  "walkers": 30,
+  "parameters": 15,
+  "stuck": 0,
+  "megabytes": 3.2
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m26_SUVLinear.npz",
+  "steps": 30020,
+  "walkers": 34,
+  "parameters": 17,
+  "stuck": 1,
+  "megabytes": 6.2
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m27_RadImmunoFitD.npz",
+  "steps": 40000,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 7.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m27_RadImmunoFixed.npz",
+  "steps": 20010,
+  "walkers": 30,
+  "parameters": 15,
+  "stuck": 0,
+  "megabytes": 3.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m27_SUVLinear.npz",
+  "steps": 50020,
+  "walkers": 34,
+  "parameters": 17,
+  "stuck": 2,
+  "megabytes": 9.8
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m4_RadImmunoFitD.npz",
+  "steps": 40000,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 7.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m4_RadImmunoFixed.npz",
+  "steps": 20010,
+  "walkers": 30,
+  "parameters": 15,
+  "stuck": 0,
+  "megabytes": 3.2
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m4_SUVLinear.npz",
+  "steps": 50020,
+  "walkers": 34,
+  "parameters": 17,
+  "stuck": 3,
+  "megabytes": 9.5
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m5_RadImmunoFitD.npz",
+  "steps": 40000,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 7.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m5_RadImmunoFixed.npz",
+  "steps": 30010,
+  "walkers": 30,
+  "parameters": 15,
+  "stuck": 0,
+  "megabytes": 4.7
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m5_SUVLinear.npz",
+  "steps": 40020,
+  "walkers": 34,
+  "parameters": 17,
+  "stuck": 0,
+  "megabytes": 8.0
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m9_RadImmunoFitD.npz",
+  "steps": 40000,
+  "walkers": 32,
+  "parameters": 16,
+  "stuck": 0,
+  "megabytes": 7.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m9_RadImmunoFixed.npz",
+  "steps": 30010,
+  "walkers": 30,
+  "parameters": 15,
+  "stuck": 0,
+  "megabytes": 4.7
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_EXCL-c0_m9_SUVLinear.npz",
+  "steps": 60020,
+  "walkers": 34,
+  "parameters": 17,
+  "stuck": 2,
+  "megabytes": 11.8
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m10_RadImmunoFixed.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m10_SUVLinear.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m11_RadImmunoFixed.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m11_SUVLinear.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m12_RadImmunoFixed.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m12_SUVLinear.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m13_RadImmunoFixed.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m13_SUVLinear.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m17_RadImmunoFixed.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m17_SUVLinear.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m18_RadImmunoFixed.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m18_SUVLinear.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m19_RadImmunoFixed.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m19_SUVLinear.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m20_RadImmunoFixed.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m20_SUVLinear.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m22_RadImmunoFixed.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m22_SUVLinear.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m25_RadImmunoFixed.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m25_SUVLinear.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m26_RadImmunoFixed.npz",
+  "steps": 10000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.2
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m26_SUVLinear.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m27_RadImmunoFixed.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m27_SUVLinear.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m4_RadImmunoFixed.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m4_SUVLinear.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m5_RadImmunoFixed.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m5_SUVLinear.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m9_RadImmunoFixed.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ },
+ {
+  "file": "06_combined_treatment/rad+io_sensitive_PRED-c0_m9_SUVLinear.npz",
+  "steps": 5000,
+  "walkers": 16,
+  "parameters": 2,
+  "stuck": 0,
+  "megabytes": 0.1
+ }
+]

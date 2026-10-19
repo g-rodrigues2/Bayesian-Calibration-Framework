@@ -7,11 +7,11 @@ suites: `python -m pytest tests -q` in each stage (WAIC and PSIS-LOO require `ar
 
 **What a command needs.** The figure and table commands read the thinned chains
 (`Output_Calibration/*.gz`) and the maximum-likelihood samples (`*.npz`), which are **part of this
-deposit**: every figure and table can be redrawn without any other download, in minutes. What is not
-deposited are the resumable HDF5 backends of `reinitiate_files/`, which only serve to extend a chain,
-and the walker-resolved chains, which are needed solely for the convergence diagnostics of the appendix
-and are in the separate data deposit. A command that starts a calibration therefore samples it from
-scratch, which takes hours per chain; a command that redraws a figure does not.
+deposit**: every figure and table can be redrawn without any other download, in minutes. So are the
+walker-resolved chains of `chains/`, which the convergence diagnostics of the appendix need. What is
+not deposited are the resumable HDF5 backends of `reinitiate_files/`, which only serve to extend a
+chain, so a command that starts a calibration samples it from scratch, which takes hours per chain; a
+command that redraws a figure does not.
 
 ## Stage 1 — control growth (`01_control_growth`)
 
@@ -87,5 +87,5 @@ Each chain of the thesis was extended with `01_control_growth/run_until_converge
 parameter had at least 50 integrated autocorrelation times after burn-in and split R-hat below 1.05 (see
 the READMEs of the stages for the exact commands and `Output_Calibration/convergence_*.csv` for the
 diagnostics of each extension). Many chains can run at once: use `CALIB_USE_POOL=0` and one process per
-chain. The chains exported for the data deposit (`export_chains.py`) reproduce the Appendix
+chain. The chains of `chains/`, written by `export_chains.py`, reproduce the Appendix
 tables of convergence diagnostics.

@@ -38,10 +38,10 @@ estimate, stuck-walker removal, information criteria (AIC, AICc, BIC, DIC, WAIC,
 convergence diagnostics, posterior bands and the plotting style of the figures. The other stages import
 them through `_path_setup.py`.
 
-[`REPRODUCE.md`](REPRODUCE.md) gives the command that produces each figure and table. The thinned
-posterior chains used by those commands are included here. The walker-resolved chains, from which the
-convergence diagnostics of the appendix are computed, are deposited separately because of their size;
-the DOI of that deposit is given in the description of this record.
+[`REPRODUCE.md`](REPRODUCE.md) gives the command that produces each figure and table. The posterior
+chains those commands use are included, and so are the walker-resolved chains of the selected models
+and of the leave-one-out analysis ([`chains/`](chains/)), from which the convergence diagnostics of the
+appendix are recomputed.
 
 ## Installation
 
@@ -115,9 +115,10 @@ between 7 and 9 pt at the width each figure occupies on the page.
 
 ## MCMC chains
 
-`export_chains.py` writes the chains of the selected models and of the leave-one-out analysis (every
-10th step, float32, with the burn-in and the stuck walkers used in the thesis) for the data deposit; the
-convergence diagnostics of the Appendix are reproduced from these files (`read_exported_chain`).
+[`chains/`](chains/) holds the chains of the selected models and of the leave-one-out analysis as they
+leave the sampler, walker by walker (every 10th step, float32, with the burn-in and the stuck walkers
+used in the thesis), written by `export_chains.py` from the HDF5 backends and read back by
+`read_exported_chain`. The convergence diagnostics of the Appendix are recomputed from them.
 
 ## Data
 
