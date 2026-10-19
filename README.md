@@ -1,5 +1,4 @@
-# Bayesian calibration of a biology-based model using [89Zr]-CD8 PET imaging and tumor volume changes
-# to characterize therapeutic response to radiation and immunotherapy in triple-negative breast cancer
+# Bayesian calibration of a biology-based model using [89Zr]-CD8 PET imaging and tumor volume changes to characterize therapeutic response to radiation and immunotherapy in triple-negative breast cancer
 
 <!-- DOI badge: replace XXXXXXXX with the Zenodo record once the deposit is published -->
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.XXXXXXXX.svg)](https://doi.org/10.5281/zenodo.XXXXXXXX)

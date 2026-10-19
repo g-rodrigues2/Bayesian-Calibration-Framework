@@ -4,7 +4,7 @@ title: "Bayesian calibration of a biology-based mathematical model using [89Zr]-
 type: software
 license: MIT
 # doi: filled in when the Zenodo record is published
-# repository-code: "https://github.com/g-rodrigues2/tnbc-cd8-pet-bayesian-calibration"
+repository-code: "https://github.com/g-rodrigues2/Bayesian-Calibration-Framework"
 authors:
   - family-names: Rodrigues
     given-names: Guilherme
