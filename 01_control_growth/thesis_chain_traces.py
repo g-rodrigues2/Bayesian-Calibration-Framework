@@ -5,7 +5,9 @@
 Chains of the selected models (control growth per phenotype, growth sharing scenario 2, radiotherapy
 sharing scenario 2, de Pillis-Radunskaya immunotherapy, prediction of the combined cohort with fixed
 parameters, SUV-based lysis) and of the leave-one-out analysis (training folds and held-out initial
-volumes of both formulations) are read from the HDF5 backends of each stage. For every chain the
+volumes of both formulations) are read from the resumable HDF5 backend of each stage when one is
+present, and otherwise from the thinned chains of `chains/`, which are the ones distributed. Either
+source gives the tables as they are printed in the thesis. For every chain the
 figure shows the traces of all walkers (black: retained; orange: removed as stuck), with the end of the
 burn-in period (first quarter of the steps) as a dashed red line. The diagnostics of the post-burn-in
 chain after stuck-walker removal are written to chain_diagnostics.csv and chain_diagnostics.tex:
@@ -61,18 +63,39 @@ SELECTED = [
 ]
 
 
-def read_backend(path):
-    backend = emcee.backends.HDFBackend(path, read_only=True)
-    return backend.get_chain(), backend.get_log_prob()
+def load_chain(path):
+    """(chain, log_prob, thin, steps) of a resumable backend or of an exported chain of `chains/`.
+
+    An exported chain records the number of steps of the original one, which its own length gives only
+    up to the thinning interval."""
+    if path.endswith('.h5'):
+        backend = emcee.backends.HDFBackend(path, read_only=True)
+        chain = backend.get_chain()
+        return chain, backend.get_log_prob(), 1, chain.shape[0]
+    z = np.load(path, allow_pickle=False)
+    return z['chain'], z['log_prob'], int(z['thin']), int(z['n_steps'])
 
 
-def analyse(chain, log_prob):
-    """Burn-in, stuck mask and diagnostics of the post-burn-in chain without stuck walkers."""
-    steps = chain.shape[0]
+def chain_path(backend_rel):
+    """The backend when the calibration is at hand, otherwise the chain distributed with the code."""
+    path = os.path.join(ROOT, backend_rel)
+    if os.path.exists(path):
+        return path
+    stage = backend_rel.split('/')[0]
+    exported = os.path.join(ROOT, 'chains', stage, os.path.basename(backend_rel).replace('.h5', '.npz'))
+    return exported if os.path.exists(exported) else None
+
+
+def analyse(chain, log_prob, thin=1, steps=None):
+    """Burn-in, stuck mask and diagnostics of the post-burn-in chain without stuck walkers.
+
+    Lengths are reported in steps of the original chain, so that a thinned chain gives the same table."""
+    steps = chain.shape[0] * thin if steps is None else steps
     burn = steps // 4
-    stuck = find_stuck_walkers(log_prob[burn:])
-    post = chain[burn:, ~stuck, :]
-    tau = emcee.autocorr.integrated_time(post, quiet=True)
+    stored_burn = burn // thin
+    stuck = find_stuck_walkers(log_prob[stored_burn:])
+    post = chain[stored_burn:, ~stuck, :]
+    tau = emcee.autocorr.integrated_time(post, quiet=True) * thin
     rhat = np.array([split_rhat(post[:, :, i]) for i in range(post.shape[2])])
     return burn, stuck, dict(steps=steps, walkers=chain.shape[1], stuck=int(stuck.sum()), tau_max=float(tau.max()),
                              steps_over_tau_min=float((steps - burn) / tau.max()), rhat_max=float(rhat.max()))
@@ -93,12 +116,12 @@ def display(label):
 
 def selected_figures(out_dir, rows):
     for key, description, backend, npz, logged in SELECTED:
-        path = os.path.join(ROOT, backend)
-        if not os.path.exists(path):
-            print(f'[skip] {key}: {backend} not found')
+        path = chain_path(backend)
+        if path is None:
+            print(f'[skip] {key}: neither {backend} nor its exported chain found')
             continue
-        chain, log_prob = read_backend(path)
-        burn, stuck, diag = analyse(chain, log_prob)
+        chain, log_prob, thin, steps = load_chain(path)
+        burn, stuck, diag = analyse(chain, log_prob, thin, steps)
         labels = labels_of(npz, chain.shape[2])
         shown = [i for i, lab in enumerate(labels) if not lab.startswith('ic')] or list(range(len(labels)))
         if key == 'prediction':
@@ -108,7 +131,7 @@ def selected_figures(out_dir, rows):
             if labels[i] in logged:
                 plot[:, :, j] = np.exp(plot[:, :, j])
         ts.trace_figure(plot, [display(labels[i]) for i in shown], os.path.join(out_dir, f'trace_{key}.png'), burn,
-                        removed=stuck, ncols=4 if len(shown) > 6 else 1)
+                        removed=stuck, ncols=4 if len(shown) > 6 else 1, step=thin)
         rows.append(dict(chain=key, description=description, **diag))
         print(f'{key}: {diag}')
 
@@ -118,14 +141,14 @@ def grid_figure(entries, path, label, ncols=3):
     ts.times_font(13)
     nrows = int(np.ceil(len(entries) / ncols))
     fig, axes = plt.subplots(nrows, ncols, figsize=(5.2 * ncols, 2.3 * nrows), squeeze=False)
-    for ax, (title, series, burn, stuck) in zip(axes.ravel(), entries):
+    for ax, (title, series, burn, stuck, thin) in zip(axes.ravel(), entries):
         stride = max(1, series.shape[0] // 2000)
-        x = np.arange(0, series.shape[0], stride)
+        x = np.arange(0, series.shape[0], stride) * thin
         ax.plot(x, series[::stride, ~stuck], color='black', alpha=0.3, linewidth=0.4)
         if stuck.any():
             ax.plot(x, series[::stride, stuck], color='darkorange', alpha=0.7, linewidth=0.5)
         ax.axvline(burn, color='red', linestyle='--', linewidth=1)
-        ax.set_xlim(0, series.shape[0])
+        ax.set_xlim(0, series.shape[0] * thin)
         ax.set_title(title, fontsize=13)
         ax.set_ylabel(label, fontsize=13)
         ax.tick_params(labelsize=10)
@@ -140,26 +163,32 @@ def grid_figure(entries, path, label, ncols=3):
 
 def loo_figures(out_dir, rows):
     reinit = os.path.join(ROOT, '06_combined_treatment', 'reinitiate_files')
+    exported = os.path.join(ROOT, 'chains', '06_combined_treatment')
+
+    def chains_of(kind, model):
+        found = sorted(glob.glob(os.path.join(reinit, f'rad+io_sensitive_{kind}-*{model}.h5')))
+        return found or sorted(glob.glob(os.path.join(exported, f'rad+io_sensitive_{kind}-*{model}.npz')))
+
     for model, name, params in (('_SUVLinear', 'with SUV', [(0, '$a$'), (1, '$b$'), (-1, r'$\sigma$')]),
                                 ('_RadImmunoFixed', 'without SUV', [(-1, r'$\sigma$')])):
-        folds = sorted(glob.glob(os.path.join(reinit, f'rad+io_sensitive_EXCL-*{model}.h5')))
-        heldout = sorted(glob.glob(os.path.join(reinit, f'rad+io_sensitive_PRED-*{model}.h5')))
+        folds = chains_of('EXCL', model)
+        heldout = chains_of('PRED', model)
         fold_entries = {p: [] for _, p in params}
         ic_entries = []
         for kind, files in (('EXCL', folds), ('PRED', heldout)):
             for path in files:
                 mouse = os.path.basename(path).split(f'_{kind}-')[1].split(model)[0]
                 title = f'{mouse.replace("c0_m", "C0 M")}'
-                chain, log_prob = read_backend(path)
-                burn, stuck, diag = analyse(chain, log_prob)
+                chain, log_prob, thin, steps = load_chain(path)
+                burn, stuck, diag = analyse(chain, log_prob, thin, steps)
                 what = 'training fold without' if kind == 'EXCL' else 'held-out initial volume of'
                 rows.append(dict(chain=f'loo{model}_{kind}_{mouse}', description=f'Leave-one-out {name}, {what} {mouse}',
                                  **diag))
                 if kind == 'EXCL':
                     for i, label in params:
-                        fold_entries[label].append((f'Fold without {title}', chain[:, :, i], burn, stuck))
+                        fold_entries[label].append((f'Fold without {title}', chain[:, :, i], burn, stuck, thin))
                 else:
-                    ic_entries.append((title, chain[:, :, 0], burn, stuck))
+                    ic_entries.append((title, chain[:, :, 0], burn, stuck, thin))
         tag = 'suv' if model == '_SUVLinear' else 'nosuv'
         for label, entries in fold_entries.items():
             stem = {'$a$': 'a', '$b$': 'b', r'$\sigma$': 'std'}[label]

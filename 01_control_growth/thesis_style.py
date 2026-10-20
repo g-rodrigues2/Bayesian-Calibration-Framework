@@ -276,15 +276,16 @@ def violin_legend(ax, fontsize=16):
     ax.legend(handles=handles, loc=1, fontsize=fontsize, frameon=False, ncol=2)
 
 
-def trace_figure(chain, labels, path, burn, removed=None, ncols=1, max_points=2000, title=None):
+def trace_figure(chain, labels, path, burn, removed=None, ncols=1, max_points=2000, title=None, step=1):
     """Walker traces (steps x walkers x parameters) of the selected parameters.
 
     Retained walkers are drawn in black, walkers removed as stuck in orange; the dashed red line marks the
-    end of the burn-in period."""
+    end of the burn-in period. `step` is the interval between stored samples, so that a thinned chain is
+    drawn against the step numbers of the original one, as `burn` is given in those."""
     times_font(14)
     steps, walkers, n = chain.shape
     stride = max(1, steps // max_points)
-    x = np.arange(0, steps, stride)
+    x = np.arange(0, steps, stride) * step
     removed = np.zeros(walkers, bool) if removed is None else np.asarray(removed, bool)
     nrows = int(math.ceil(n / ncols))
     fig, axes = plt.subplots(nrows, ncols, figsize=(10 * ncols / max(1, ncols ** 0.5), 1.9 * nrows),
@@ -297,7 +298,7 @@ def trace_figure(chain, labels, path, burn, removed=None, ncols=1, max_points=20
         if removed.any():
             ax.plot(x, chain[::stride, removed, i], color='darkorange', alpha=0.7, linewidth=0.5)
         ax.axvline(burn, color='red', linestyle='--', linewidth=1)
-        ax.set_xlim(0, steps)
+        ax.set_xlim(0, steps * step)
         ax.set_ylabel(labels[i], fontsize=14)
         ax.yaxis.set_label_coords(-0.1 if ncols == 1 else -0.18, 0.5)
         ax.tick_params(labelsize=11)
