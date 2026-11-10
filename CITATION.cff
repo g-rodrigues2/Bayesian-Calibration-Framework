@@ -3,7 +3,7 @@ message: "If you use this code or data, please cite the deposit below, the thesi
 title: "Bayesian calibration and validation of biology-based models for triple-negative breast cancer response (code and data)"
 type: software
 license: MIT
-version: 1.1.0
+version: 1.1.1
 date-released: 2026-11-10
 doi: 10.5281/zenodo.23481162
 identifiers:
