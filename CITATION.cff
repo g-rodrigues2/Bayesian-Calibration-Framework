@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this code or data, please cite the deposit below, the thesis, and the article in the references."
-title: "Bayesian calibration of a biology-based mathematical model using [89Zr]-CD8 PET imaging and tumor volume changes to characterize therapeutic response to radiation and immunotherapy in triple-negative breast cancer (code and data)"
+title: "Bayesian calibration and validation of biology-based models for triple-negative breast cancer response (code and data)"
 type: software
 license: MIT
 version: 1.1.0

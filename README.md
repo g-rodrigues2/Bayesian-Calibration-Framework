@@ -1,16 +1,17 @@
-# Bayesian calibration of a biology-based model using [89Zr]-CD8 PET imaging and tumor volume changes to characterize therapeutic response to radiation and immunotherapy in triple-negative breast cancer
+# Bayesian calibration and validation of biology-based models for triple-negative breast cancer response
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23481162.svg)](https://doi.org/10.5281/zenodo.23481162)
 
-This repository holds the code and data of the article of the same name and of **Chapter 4** of the
-doctoral thesis
+This repository holds the code and data of **Chapter 4** of the doctoral thesis
 
 > G. Rodrigues, *Mathematical models to describe tumoral behaviors under treatment regimens*,
 > Graduate Program in Biometrics, Institute of Biosciences, São Paulo State University (UNESP),
 > Botucatu, 2026. Advisor: P. F. A. Mancera. Co-advisor: E. A. B. F. Lima.
 
-Both describe the same analysis, and every figure and table of either can be redrawn from this
-repository. It calibrates, selects and validates models of the form
+The same analysis is reported in the article *Bayesian calibration of a biology-based mathematical
+model using [89Zr]-CD8 PET imaging and tumor volume changes to characterize therapeutic response to
+radiation and immunotherapy in triple-negative breast cancer* (Mathematical Biosciences, submitted),
+and every figure and table of either can be redrawn from this repository. It calibrates, selects and validates models of the form
 
 ```
 dT/dt = G(T,t) − R(T,t) − I(T,t)
