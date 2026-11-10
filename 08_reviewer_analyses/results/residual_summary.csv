@@ -1,0 +1,11 @@
+quantity,value
+n_obs,379
+n_mice,15
+residual_sd,83.3339
+rho1_pooled,0.693421
+rho1_mean,0.659504
+rho1_min,0.347376
+rho1_max,0.847622
+spearman_abs_residual_vs_fitted,0.284353
+spearman_pvalue,1.7587e-08
+neff_factor,0.181041

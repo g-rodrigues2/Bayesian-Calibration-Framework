@@ -113,6 +113,14 @@ def main():
 
     wf = np.concatenate([width_fixed[m['name']] for m in mice])
     wu = np.concatenate([width_full[m['name']] for m in mice])
+    with open(os.path.join(OUT, 'upstream_uncertainty_summary.csv'), 'w', encoding='utf-8', newline='\n') as fh:
+        fh.write('quantity,value\n')
+        fh.write('median_width_fixed,%.6f\nmedian_width_upstream,%.6f\nwidth_ratio,%.6f\n'
+                 % (np.median(wf), np.median(wu), np.median(wu) / max(np.median(wf), 1e-9)))
+        for tag, values in (('fixed', ccc_fixed), ('upstream', ccc_full)):
+            q = np.percentile(values, [50, 2.5, 97.5])
+            fh.write('ccc_%s_median,%.6f\nccc_%s_q025,%.6f\nccc_%s_q975,%.6f\n'
+                     % (tag, q[0], tag, q[1], tag, q[2]))
     print(f'{args.draws} draws, {len(mice)} mice')
     print('median width of the 95%% band (mm3): initial volumes only %.1f, with upstream parameters %.1f '
           '(ratio %.1f)' % (np.median(wf), np.median(wu), np.median(wu) / max(np.median(wf), 1e-9)))

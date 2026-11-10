@@ -32,6 +32,7 @@ previous stages.
 | 5 | [`05_immunotherapy/`](05_immunotherapy/) | 4.4 | immunotherapy, 3 mice | 12 immunotherapy-effect models, prior predictive check, profile likelihood |
 | 6 | [`06_combined_treatment/`](06_combined_treatment/) | 4.5–4.7 | radiotherapy + immunotherapy, 15 mice | prediction, SUV-based lysis, leave-one-out |
 | 7 | [`07_bic_verification/`](07_bic_verification/) | 4.2–4.6 | all | verification of the maximum log-likelihoods of every BIC table (670 cells) |
+| 8 | [`08_reviewer_analyses/`](08_reviewer_analyses/) | — | all | analyses added in response to the peer review of the article |
 
 `01_control_growth` also holds the modules shared by all stages: walker initialization around a MAP
 estimate, stuck-walker removal, information criteria (AIC, AICc, BIC, DIC, WAIC, PSIS-LOO, WBIC),

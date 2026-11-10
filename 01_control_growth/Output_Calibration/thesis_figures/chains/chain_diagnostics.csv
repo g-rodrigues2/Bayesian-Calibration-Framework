@@ -4,65 +4,65 @@ control_resistant,"Logistic growth, radiation-resistant control group (global ca
 growth_sharing,"Logistic growth, sharing scenario 2 (both control groups)",30000,72,0,367.9824,61.1442,1.0200
 radiotherapy_sharing,"Delayed exponential decay, radiotherapy sharing scenario 2",80000,58,0,1184.1482,50.6693,1.0364
 immunotherapy,"de Pillis-Radunskaya law, immunotherapy-only cohort ($d$ and $s$ sampled on the log scale)",20000,42,0,263.8292,56.8550,1.0200
-prediction,"Radiotherapy + immunotherapy cohort, fixed parameters (initial volumes and std)",29517,32,0,342.3717,64.6607,1.0206
-suv,"Radiotherapy + immunotherapy cohort, linear SUV-based lysis",50000,36,2,721.4523,51.9785,1.0261
-loo_SUVLinear_EXCL_c0_m10,"Leave-one-out with SUV, training fold without c0_m10",50530,34,2,691.7953,54.7821,1.0201
-loo_SUVLinear_EXCL_c0_m11,"Leave-one-out with SUV, training fold without c0_m11",51042,34,4,727.3176,52.6345,1.0277
-loo_SUVLinear_EXCL_c0_m12,"Leave-one-out with SUV, training fold without c0_m12",70520,34,2,646.0165,81.8710,1.0486
-loo_SUVLinear_EXCL_c0_m13,"Leave-one-out with SUV, training fold without c0_m13",50020,34,1,730.6163,51.3471,1.0304
-loo_SUVLinear_EXCL_c0_m17,"Leave-one-out with SUV, training fold without c0_m17",50020,34,2,677.1260,55.4033,1.0217
-loo_SUVLinear_EXCL_c0_m18,"Leave-one-out with SUV, training fold without c0_m18",40020,34,1,519.6114,57.7643,1.0447
-loo_SUVLinear_EXCL_c0_m19,"Leave-one-out with SUV, training fold without c0_m19",50020,34,1,730.8860,51.3281,1.0233
-loo_SUVLinear_EXCL_c0_m20,"Leave-one-out with SUV, training fold without c0_m20",50020,34,1,661.5154,56.7107,1.0217
-loo_SUVLinear_EXCL_c0_m22,"Leave-one-out with SUV, training fold without c0_m22",50020,34,1,657.5592,57.0519,1.0273
-loo_SUVLinear_EXCL_c0_m25,"Leave-one-out with SUV, training fold without c0_m25",60020,34,1,677.3323,66.4593,1.0140
-loo_SUVLinear_EXCL_c0_m26,"Leave-one-out with SUV, training fold without c0_m26",30020,34,1,348.2863,64.6451,1.0252
-loo_SUVLinear_EXCL_c0_m27,"Leave-one-out with SUV, training fold without c0_m27",50020,34,2,629.1105,59.6318,1.0238
-loo_SUVLinear_EXCL_c0_m4,"Leave-one-out with SUV, training fold without c0_m4",50020,34,3,659.3533,56.8967,1.0219
-loo_SUVLinear_EXCL_c0_m5,"Leave-one-out with SUV, training fold without c0_m5",40020,34,0,589.3333,50.9304,1.0308
-loo_SUVLinear_EXCL_c0_m9,"Leave-one-out with SUV, training fold without c0_m9",60020,34,2,811.9748,55.4389,1.0185
-loo_SUVLinear_PRED_c0_m10,"Leave-one-out with SUV, held-out initial volume of c0_m10",5000,16,0,31.2482,120.0070,1.0124
-loo_SUVLinear_PRED_c0_m11,"Leave-one-out with SUV, held-out initial volume of c0_m11",5000,16,0,34.0399,110.1647,1.0146
-loo_SUVLinear_PRED_c0_m12,"Leave-one-out with SUV, held-out initial volume of c0_m12",5000,16,0,32.5786,115.1062,1.0110
-loo_SUVLinear_PRED_c0_m13,"Leave-one-out with SUV, held-out initial volume of c0_m13",5000,16,0,32.6178,114.9678,1.0112
-loo_SUVLinear_PRED_c0_m17,"Leave-one-out with SUV, held-out initial volume of c0_m17",5000,16,0,34.8311,107.6625,1.0129
-loo_SUVLinear_PRED_c0_m18,"Leave-one-out with SUV, held-out initial volume of c0_m18",5000,16,0,33.4694,112.0425,1.0108
-loo_SUVLinear_PRED_c0_m19,"Leave-one-out with SUV, held-out initial volume of c0_m19",5000,16,0,37.5042,99.9889,1.0116
-loo_SUVLinear_PRED_c0_m20,"Leave-one-out with SUV, held-out initial volume of c0_m20",5000,16,0,66.3553,56.5140,1.0200
-loo_SUVLinear_PRED_c0_m22,"Leave-one-out with SUV, held-out initial volume of c0_m22",5000,16,0,34.5434,108.5592,1.0085
-loo_SUVLinear_PRED_c0_m25,"Leave-one-out with SUV, held-out initial volume of c0_m25",5000,16,0,35.1923,106.5574,1.0127
-loo_SUVLinear_PRED_c0_m26,"Leave-one-out with SUV, held-out initial volume of c0_m26",5000,16,0,39.6887,94.4852,1.0398
-loo_SUVLinear_PRED_c0_m27,"Leave-one-out with SUV, held-out initial volume of c0_m27",5000,16,0,32.2347,116.3343,1.0096
-loo_SUVLinear_PRED_c0_m4,"Leave-one-out with SUV, held-out initial volume of c0_m4",5000,16,0,34.5912,108.4089,1.0125
-loo_SUVLinear_PRED_c0_m5,"Leave-one-out with SUV, held-out initial volume of c0_m5",5000,16,0,33.9895,110.3280,1.0110
-loo_SUVLinear_PRED_c0_m9,"Leave-one-out with SUV, held-out initial volume of c0_m9",5000,16,0,31.4714,119.1560,1.0080
-loo_RadImmunoFixed_EXCL_c0_m10,"Leave-one-out without SUV, training fold without c0_m10",20050,30,0,289.7416,51.9014,1.0266
-loo_RadImmunoFixed_EXCL_c0_m11,"Leave-one-out without SUV, training fold without c0_m11",30030,30,0,318.4092,70.7360,1.0195
-loo_RadImmunoFixed_EXCL_c0_m12,"Leave-one-out without SUV, training fold without c0_m12",20030,30,0,280.0870,53.6369,1.0267
-loo_RadImmunoFixed_EXCL_c0_m13,"Leave-one-out without SUV, training fold without c0_m13",30030,30,0,325.0985,69.2805,1.0186
-loo_RadImmunoFixed_EXCL_c0_m17,"Leave-one-out without SUV, training fold without c0_m17",20030,30,0,287.7650,52.2058,1.0244
-loo_RadImmunoFixed_EXCL_c0_m18,"Leave-one-out without SUV, training fold without c0_m18",30030,30,0,320.7616,70.2173,1.0185
-loo_RadImmunoFixed_EXCL_c0_m19,"Leave-one-out without SUV, training fold without c0_m19",30030,30,0,326.0603,69.0762,1.0184
-loo_RadImmunoFixed_EXCL_c0_m20,"Leave-one-out without SUV, training fold without c0_m20",30030,30,0,328.5986,68.5426,1.0218
-loo_RadImmunoFixed_EXCL_c0_m22,"Leave-one-out without SUV, training fold without c0_m22",20030,30,0,296.8952,50.6003,1.0330
-loo_RadImmunoFixed_EXCL_c0_m25,"Leave-one-out without SUV, training fold without c0_m25",30010,30,0,321.3034,70.0522,1.0189
-loo_RadImmunoFixed_EXCL_c0_m26,"Leave-one-out without SUV, training fold without c0_m26",20010,30,0,251.0361,59.7842,1.0309
-loo_RadImmunoFixed_EXCL_c0_m27,"Leave-one-out without SUV, training fold without c0_m27",20010,30,0,269.6686,55.6535,1.0302
-loo_RadImmunoFixed_EXCL_c0_m4,"Leave-one-out without SUV, training fold without c0_m4",20010,30,0,284.1346,52.8200,1.0246
-loo_RadImmunoFixed_EXCL_c0_m5,"Leave-one-out without SUV, training fold without c0_m5",30010,30,0,309.4614,72.7328,1.0220
-loo_RadImmunoFixed_EXCL_c0_m9,"Leave-one-out without SUV, training fold without c0_m9",30010,30,0,323.7112,69.5311,1.0190
-loo_RadImmunoFixed_PRED_c0_m10,"Leave-one-out without SUV, held-out initial volume of c0_m10",5000,16,0,30.2702,123.8843,1.0115
-loo_RadImmunoFixed_PRED_c0_m11,"Leave-one-out without SUV, held-out initial volume of c0_m11",5000,16,0,32.5480,115.2145,1.0133
-loo_RadImmunoFixed_PRED_c0_m12,"Leave-one-out without SUV, held-out initial volume of c0_m12",5000,16,0,33.7917,110.9740,1.0113
-loo_RadImmunoFixed_PRED_c0_m13,"Leave-one-out without SUV, held-out initial volume of c0_m13",5000,16,0,33.8224,110.8731,1.0076
-loo_RadImmunoFixed_PRED_c0_m17,"Leave-one-out without SUV, held-out initial volume of c0_m17",5000,16,0,33.1770,113.0301,1.0095
-loo_RadImmunoFixed_PRED_c0_m18,"Leave-one-out without SUV, held-out initial volume of c0_m18",5000,16,0,32.6969,114.6897,1.0100
-loo_RadImmunoFixed_PRED_c0_m19,"Leave-one-out without SUV, held-out initial volume of c0_m19",5000,16,0,33.1416,113.1507,1.0076
-loo_RadImmunoFixed_PRED_c0_m20,"Leave-one-out without SUV, held-out initial volume of c0_m20",5000,16,0,32.0985,116.8278,1.0130
-loo_RadImmunoFixed_PRED_c0_m22,"Leave-one-out without SUV, held-out initial volume of c0_m22",5000,16,0,34.9254,107.3716,1.0134
-loo_RadImmunoFixed_PRED_c0_m25,"Leave-one-out without SUV, held-out initial volume of c0_m25",5000,16,0,38.7608,96.7472,1.0105
-loo_RadImmunoFixed_PRED_c0_m26,"Leave-one-out without SUV, held-out initial volume of c0_m26",10000,16,0,134.8706,55.6089,1.0250
-loo_RadImmunoFixed_PRED_c0_m27,"Leave-one-out without SUV, held-out initial volume of c0_m27",5000,16,0,33.6090,111.5774,1.0109
-loo_RadImmunoFixed_PRED_c0_m4,"Leave-one-out without SUV, held-out initial volume of c0_m4",5000,16,0,29.5806,126.7723,1.0122
-loo_RadImmunoFixed_PRED_c0_m5,"Leave-one-out without SUV, held-out initial volume of c0_m5",5000,16,0,31.6925,118.3244,1.0108
-loo_RadImmunoFixed_PRED_c0_m9,"Leave-one-out without SUV, held-out initial volume of c0_m9",5000,16,0,31.2387,120.0435,1.0101
+prediction,"Radiotherapy + immunotherapy cohort, fixed parameters (initial volumes and std)",30000,32,0,277.7944,80.9952,1.0151
+suv,"Radiotherapy + immunotherapy cohort, linear SUV-based lysis",50000,36,0,652.3994,57.4801,1.0206
+loo_SUVLinear_EXCL_c0_m10,"Leave-one-out with SUV, training fold without c0_m10",60000,34,0,764.1231,58.8910,1.0191
+loo_SUVLinear_EXCL_c0_m11,"Leave-one-out with SUV, training fold without c0_m11",40000,34,0,587.3767,51.0746,1.0282
+loo_SUVLinear_EXCL_c0_m12,"Leave-one-out with SUV, training fold without c0_m12",60000,34,0,554.1355,81.2076,1.0369
+loo_SUVLinear_EXCL_c0_m13,"Leave-one-out with SUV, training fold without c0_m13",60000,34,0,691.5964,65.0668,1.0172
+loo_SUVLinear_EXCL_c0_m17,"Leave-one-out with SUV, training fold without c0_m17",60000,34,0,624.7579,72.0279,1.0150
+loo_SUVLinear_EXCL_c0_m18,"Leave-one-out with SUV, training fold without c0_m18",60000,34,0,879.0218,51.1933,1.0267
+loo_SUVLinear_EXCL_c0_m19,"Leave-one-out with SUV, training fold without c0_m19",60000,34,0,664.1816,67.7526,1.0148
+loo_SUVLinear_EXCL_c0_m20,"Leave-one-out with SUV, training fold without c0_m20",60000,34,0,643.8494,69.8921,1.0137
+loo_SUVLinear_EXCL_c0_m22,"Leave-one-out with SUV, training fold without c0_m22",60000,34,0,692.5976,64.9728,1.0135
+loo_SUVLinear_EXCL_c0_m25,"Leave-one-out with SUV, training fold without c0_m25",60000,34,0,641.4534,70.1532,1.0166
+loo_SUVLinear_EXCL_c0_m26,"Leave-one-out with SUV, training fold without c0_m26",40000,34,0,358.7072,83.6337,1.0153
+loo_SUVLinear_EXCL_c0_m27,"Leave-one-out with SUV, training fold without c0_m27",60000,34,0,685.3366,65.6612,1.0190
+loo_SUVLinear_EXCL_c0_m4,"Leave-one-out with SUV, training fold without c0_m4",40000,34,0,506.0205,59.2861,1.0208
+loo_SUVLinear_EXCL_c0_m5,"Leave-one-out with SUV, training fold without c0_m5",40000,34,0,495.9916,60.4849,1.0199
+loo_SUVLinear_EXCL_c0_m9,"Leave-one-out with SUV, training fold without c0_m9",60000,34,0,720.2871,62.4751,1.0180
+loo_SUVLinear_PRED_c0_m10,"Leave-one-out with SUV, held-out initial volume of c0_m10",10000,16,0,33.3063,225.1828,1.0053
+loo_SUVLinear_PRED_c0_m11,"Leave-one-out with SUV, held-out initial volume of c0_m11",10000,16,0,34.2550,218.9463,1.0033
+loo_SUVLinear_PRED_c0_m12,"Leave-one-out with SUV, held-out initial volume of c0_m12",10000,16,0,34.9185,214.7860,1.0057
+loo_SUVLinear_PRED_c0_m13,"Leave-one-out with SUV, held-out initial volume of c0_m13",10000,16,0,37.4878,200.0650,1.0035
+loo_SUVLinear_PRED_c0_m17,"Leave-one-out with SUV, held-out initial volume of c0_m17",10000,16,0,37.5853,199.5461,1.0052
+loo_SUVLinear_PRED_c0_m18,"Leave-one-out with SUV, held-out initial volume of c0_m18",10000,16,0,38.3111,195.7658,1.0053
+loo_SUVLinear_PRED_c0_m19,"Leave-one-out with SUV, held-out initial volume of c0_m19",10000,16,0,37.8582,198.1076,1.0062
+loo_SUVLinear_PRED_c0_m20,"Leave-one-out with SUV, held-out initial volume of c0_m20",10000,16,0,71.5630,104.8028,1.0121
+loo_SUVLinear_PRED_c0_m22,"Leave-one-out with SUV, held-out initial volume of c0_m22",10000,16,0,31.8520,235.4640,1.0058
+loo_SUVLinear_PRED_c0_m25,"Leave-one-out with SUV, held-out initial volume of c0_m25",10000,16,0,36.2508,206.8919,1.0048
+loo_SUVLinear_PRED_c0_m26,"Leave-one-out with SUV, held-out initial volume of c0_m26",10000,16,0,34.9612,214.5238,1.0045
+loo_SUVLinear_PRED_c0_m27,"Leave-one-out with SUV, held-out initial volume of c0_m27",10000,16,0,35.8758,209.0543,1.0049
+loo_SUVLinear_PRED_c0_m4,"Leave-one-out with SUV, held-out initial volume of c0_m4",10000,16,0,38.4526,195.0451,1.0080
+loo_SUVLinear_PRED_c0_m5,"Leave-one-out with SUV, held-out initial volume of c0_m5",10000,16,0,33.7655,222.1202,1.0031
+loo_SUVLinear_PRED_c0_m9,"Leave-one-out with SUV, held-out initial volume of c0_m9",10000,16,0,34.8947,214.9322,1.0050
+loo_RadImmunoFixed_EXCL_c0_m10,"Leave-one-out without SUV, training fold without c0_m10",20000,30,0,244.3688,61.3826,1.0211
+loo_RadImmunoFixed_EXCL_c0_m11,"Leave-one-out without SUV, training fold without c0_m11",20000,30,0,247.8169,60.5285,1.0288
+loo_RadImmunoFixed_EXCL_c0_m12,"Leave-one-out without SUV, training fold without c0_m12",20000,30,0,247.1690,60.6872,1.0206
+loo_RadImmunoFixed_EXCL_c0_m13,"Leave-one-out without SUV, training fold without c0_m13",20000,30,0,259.8272,57.7307,1.0204
+loo_RadImmunoFixed_EXCL_c0_m17,"Leave-one-out without SUV, training fold without c0_m17",20000,30,0,254.4970,58.9398,1.0239
+loo_RadImmunoFixed_EXCL_c0_m18,"Leave-one-out without SUV, training fold without c0_m18",20000,30,0,254.1587,59.0182,1.0199
+loo_RadImmunoFixed_EXCL_c0_m19,"Leave-one-out without SUV, training fold without c0_m19",20000,30,0,239.9870,62.5034,1.0228
+loo_RadImmunoFixed_EXCL_c0_m20,"Leave-one-out without SUV, training fold without c0_m20",20000,30,0,248.8426,60.2791,1.0197
+loo_RadImmunoFixed_EXCL_c0_m22,"Leave-one-out without SUV, training fold without c0_m22",20000,30,0,247.7456,60.5460,1.0249
+loo_RadImmunoFixed_EXCL_c0_m25,"Leave-one-out without SUV, training fold without c0_m25",20000,30,0,256.8742,58.3943,1.0232
+loo_RadImmunoFixed_EXCL_c0_m26,"Leave-one-out without SUV, training fold without c0_m26",20000,30,0,232.9782,64.3837,1.0214
+loo_RadImmunoFixed_EXCL_c0_m27,"Leave-one-out without SUV, training fold without c0_m27",20000,30,0,246.5605,60.8370,1.0241
+loo_RadImmunoFixed_EXCL_c0_m4,"Leave-one-out without SUV, training fold without c0_m4",20000,30,0,275.2737,54.4912,1.0221
+loo_RadImmunoFixed_EXCL_c0_m5,"Leave-one-out without SUV, training fold without c0_m5",20000,30,0,237.4947,63.1593,1.0204
+loo_RadImmunoFixed_EXCL_c0_m9,"Leave-one-out without SUV, training fold without c0_m9",20000,30,0,236.3940,63.4534,1.0241
+loo_RadImmunoFixed_PRED_c0_m10,"Leave-one-out without SUV, held-out initial volume of c0_m10",10000,16,0,37.2818,201.1706,1.0048
+loo_RadImmunoFixed_PRED_c0_m11,"Leave-one-out without SUV, held-out initial volume of c0_m11",10000,16,0,35.5719,210.8408,1.0065
+loo_RadImmunoFixed_PRED_c0_m12,"Leave-one-out without SUV, held-out initial volume of c0_m12",10000,16,0,35.2625,212.6905,1.0055
+loo_RadImmunoFixed_PRED_c0_m13,"Leave-one-out without SUV, held-out initial volume of c0_m13",10000,16,0,33.1543,226.2147,1.0065
+loo_RadImmunoFixed_PRED_c0_m17,"Leave-one-out without SUV, held-out initial volume of c0_m17",10000,16,0,36.3499,206.3280,1.0051
+loo_RadImmunoFixed_PRED_c0_m18,"Leave-one-out without SUV, held-out initial volume of c0_m18",10000,16,0,32.4879,230.8549,1.0066
+loo_RadImmunoFixed_PRED_c0_m19,"Leave-one-out without SUV, held-out initial volume of c0_m19",10000,16,0,40.3242,185.9927,1.0057
+loo_RadImmunoFixed_PRED_c0_m20,"Leave-one-out without SUV, held-out initial volume of c0_m20",10000,16,0,35.5997,210.6759,1.0053
+loo_RadImmunoFixed_PRED_c0_m22,"Leave-one-out without SUV, held-out initial volume of c0_m22",10000,16,0,33.4880,223.9607,1.0044
+loo_RadImmunoFixed_PRED_c0_m25,"Leave-one-out without SUV, held-out initial volume of c0_m25",10000,16,0,35.6814,210.1933,1.0055
+loo_RadImmunoFixed_PRED_c0_m26,"Leave-one-out without SUV, held-out initial volume of c0_m26",10000,16,0,35.7177,209.9799,1.0070
+loo_RadImmunoFixed_PRED_c0_m27,"Leave-one-out without SUV, held-out initial volume of c0_m27",10000,16,0,36.4430,205.8007,1.0050
+loo_RadImmunoFixed_PRED_c0_m4,"Leave-one-out without SUV, held-out initial volume of c0_m4",10000,16,0,33.6671,222.7696,1.0073
+loo_RadImmunoFixed_PRED_c0_m5,"Leave-one-out without SUV, held-out initial volume of c0_m5",10000,16,0,36.2322,206.9981,1.0080
+loo_RadImmunoFixed_PRED_c0_m9,"Leave-one-out without SUV, held-out initial volume of c0_m9",10000,16,0,37.7615,198.6147,1.0052

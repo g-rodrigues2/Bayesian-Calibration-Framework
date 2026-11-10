@@ -2,9 +2,9 @@
 
 670 of 670 cells verified.
 
-Reproduction: |reproduced - stored| log-likelihood above 1e-3 in 66 cells; stored sample outside the prior box in 2 cells.
+Reproduction: |reproduced - stored| log-likelihood above 1e-3 in 69 cells; stored sample outside the prior box in 2 cells.
 
-Refinement: largest increase of the log-likelihood over the reproduced value 2630.560; cells improved by more than 1 unit: 106.
+Refinement: largest increase of the log-likelihood over the reproduced value 2630.560; cells improved by more than 1 unit: 107.
 
 ## Table S1.2
 ### control_sensitive
@@ -153,6 +153,7 @@ Refinement: largest increase of the log-likelihood over the reproduced value 263
 ## Table SUV
 ### rad+io_sensitive
 - global lowest BIC: Linear (weight 1.000) before, Linear (weight 1.000) after
-  - Global Linear: log L -2203.87 -> -2202.09
-  - Global Saturating exponential: log L -2213.15 -> -2210.56
+  - Global Linear: log L -2229.52 -> -2202.01
+  - Global Michaelis-Menten: log L -2230.98 -> -2210.91
+  - Global Saturating exponential: log L -2222.79 -> -2210.40
 

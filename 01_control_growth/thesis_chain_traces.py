@@ -6,8 +6,9 @@ Chains of the selected models (control growth per phenotype, growth sharing scen
 sharing scenario 2, de Pillis-Radunskaya immunotherapy, prediction of the combined cohort with fixed
 parameters, SUV-based lysis) and of the leave-one-out analysis (training folds and held-out initial
 volumes of both formulations) are read from the resumable HDF5 backend of each stage when one is
-present, and otherwise from the thinned chains of `chains/`, which are the ones distributed. Either
-source gives the tables as they are printed in the thesis. For every chain the
+present, and otherwise from the thinned chains of `chains/`, which are the ones distributed. The
+backends give the tables as they are printed in the thesis; the thinned chains give them to within 1% in
+steps per autocorrelation time and 0.001 in split R-hat. For every chain the
 figure shows the traces of all walkers (black: retained; orange: removed as stuck), with the end of the
 burn-in period (first quarter of the steps) as a dashed red line. The diagnostics of the post-burn-in
 chain after stuck-walker removal are written to chain_diagnostics.csv and chain_diagnostics.tex:

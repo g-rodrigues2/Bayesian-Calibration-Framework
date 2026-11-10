@@ -1,0 +1,10 @@
+quantity,value
+median_width_fixed,37.470145
+median_width_upstream,96.923290
+width_ratio,2.586680
+ccc_fixed_median,0.856004
+ccc_fixed_q025,0.846504
+ccc_fixed_q975,0.862069
+ccc_upstream_median,0.706239
+ccc_upstream_q025,0.157370
+ccc_upstream_q975,0.833244

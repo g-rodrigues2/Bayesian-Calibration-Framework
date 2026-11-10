@@ -11,7 +11,7 @@ are in `Output_Calibration/` of each stage.
 | `02_control_sharing_scenarios/` | sharing scenario 2 between phenotypes |
 | `04_radiotherapy_sharing_scenarios/` | delayed exponential decay, sharing scenario 2 |
 | `05_immunotherapy/` | de Pillis-Radunskaya law (`d` and `s` sampled on the log scale) |
-| `06_combined_treatment/` | combined-therapy prediction with fixed parameters and with the linear SUV-based lysis rate, the 45 training folds (`EXCL-*`) of the three formulations compared in Section 4.7 and the 30 held-out chains (`PRED-*`) of the conditional analysis |
+| `06_combined_treatment/` | combined-therapy prediction with fixed parameters and with the linear SUV-based lysis rate, the 75 training folds (`EXCL-*`) of the five formulations compared in Section 4.7 and the 30 held-out chains (`PRED-*`) of the conditional analysis |
 
 `manifest.json` lists every file with the number of steps, the thinning interval, the numbers of walkers
 and parameters, and the file size.
@@ -31,6 +31,9 @@ Each file is a compressed NumPy archive, read by `read_exported_chain` in `expor
 | `labels` | parameter names, in the sampling coordinates |
 
 The parameter order is that of the calibration code (`bounds*.py` of each stage). The posterior samples
-used in the thesis are `chain[burn_in // thin:, ~stuck, :]`. Thinning by ten keeps at least thirty
-samples per integrated autocorrelation time in every chain, so the convergence diagnostics of the
-Appendix (steps per autocorrelation time and split R-hat) are recomputed from these files.
+used in the thesis are `chain[burn_in // thin:, ~stuck, :]`. Each chain is thinned by the largest
+interval, up to ten, that keeps at least thirty samples per integrated autocorrelation time, so the
+convergence diagnostics of the Appendix and of Section 4.7 (steps per autocorrelation time and split
+R-hat) can be recomputed from these files. The thesis computed them from the full chains, and the
+values recomputed here agree with them to within 1% in steps per autocorrelation time and 0.001 in
+split R-hat, with the same verdict for every chain.

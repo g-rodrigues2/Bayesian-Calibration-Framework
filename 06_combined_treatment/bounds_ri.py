@@ -1,13 +1,22 @@
 """Uniform priors. theta = [model parameters, ic_1..ic_N, std]."""
+from math import log
+
 from rad_immuno_models import MODEL_PARAMS
+
+D_LO, D_HI = 0.01, 2.0                                  # support of the lysis rate
 
 PARAM_BOUNDS = {
     '_RadImmunoFixed': ([], []),
-    '_RadImmunoFitD': ([0.01], [2.0]),                  # prior of d in Table 4.15 of the thesis
+    '_RadImmunoFitD': ([D_LO], [D_HI]),                 # prior of d in Table 4.15 of the thesis
     '_SUVLinear': ([-10.0, -10.0], [10.0, 10.0]),
     '_SUVMichaelisMenten': ([-2.0, -2.0], [3.0, 3.0]),
     '_SUVLogistic': ([-2.0, -2.0], [3.0, 3.0]),
     '_SUVSatExp': ([-2.0, -2.0], [3.0, 3.0]),
+    # exp(b) covers the same range as the prior of d above, so the intercept of the standardized
+    # models and the constant lysis rate are supported on the same interval; a is the change in
+    # log-lysis per standard deviation of the covariate.
+    '_SUVExp': ([-3.0, log(D_LO)], [3.0, log(D_HI)]),
+    '_VolExp': ([-3.0, log(D_LO)], [3.0, log(D_HI)]),
 }
 IC_UPPER_FACTOR = 2.0                                   # ic in (0, 2 x largest initial volume)
 STD_BOUNDS = {'prediction': (0.1, 1000.0), 'suv': (0.1, 300.0), 'loo': (0.1, 300.0)}

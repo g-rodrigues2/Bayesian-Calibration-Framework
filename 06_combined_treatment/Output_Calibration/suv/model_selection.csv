@@ -1,0 +1,2 @@
+model,k,n,max_ll,AICc,BIC,w_BIC
+_SUVLinear,18,379,-2203.5955,4445.0910,4514.0666,1.0000

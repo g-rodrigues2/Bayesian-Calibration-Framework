@@ -1,4 +1,6 @@
-model,total,mean,mice_best,mice_better_than_fixed
-_SUVLinear,-2871.8652,-191.4577,9,10
-_RadImmunoFixed,-3179.8134,-211.9876,2,0
-_RadImmunoFitD,-3344.2034,-222.9469,4,8
+model,total,mean,mice_best,mice_better_than_m0
+_SUVLinear,-2864.0800,-190.9387,4,12
+_RadImmunoFixed,-3402.3063,-226.8204,3,7
+_RadImmunoFitD,-3349.8488,-223.3233,2,0
+_SUVExp,-2865.8870,-191.0591,2,11
+_VolExp,-3180.6068,-212.0405,4,9

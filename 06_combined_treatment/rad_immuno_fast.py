@@ -9,12 +9,12 @@ compiled call instead of about 20,000 calls of the right-hand side from scipy's 
 
 Accuracy (posterior samples of the leave-one-out folds, reference DOP853 with rtol=1e-13 restarted at
 the same switching times): the largest volume error is 1.4e-6 mm^3 with the default RTOL=1e-9, against
-3.2e-3 mm^3 for odeint; log-likelihoods differ from those computed with odeint by less than 3e-4.
+3.2e-3 mm^3 for odeint; log-likelihoods differ from those computed with odeint by less than 5e-4 (solver_agreement.py).
 """
 import numpy as np
 from numba import njit
 
-from rad_immuno_models import lysis_coefficient
+from rad_immuno_models import COVARIATE, covariate_value, lysis_coefficient
 
 RTOL = 1e-9
 ATOL = 1e-8
@@ -143,16 +143,84 @@ def predict_mouse(ic, phi, times, n_obs, r, cc, a_rad, b_rad, delay, s, lam, tau
 
 
 @njit(cache=True)
-def cohort_loglik(ics, phis, std, times, volumes, n_obs, r, cc, a_rad, b_rad, delay, s, lam, tau_rad, tau_io,
-                  dose_rad, dose_io, rtol, atol):
+def event_grid(times, n_obs, delay, tau_rad, tau_io):
+    """Segment ends of one mouse, and the treatment state at the start of each segment.
+
+    predict_mouse rebuilds this on every call, which costs two sorts, four allocations and the two
+    counting loops per mouse per likelihood evaluation. The grid depends only on the observation
+    times, the schedule and the delay, all fixed during a chain, so Cohort computes it once."""
+    tr = np.sort(tau_rad)
+    merged = np.sort(np.concatenate((tr + delay, tau_io, times[1:n_obs])))
+    t0 = times[0]
+    ev = np.empty(merged.shape[0])
+    m = 0
+    last = t0
+    for i in range(merged.shape[0]):
+        if merged[i] > last:                 # predict_mouse skips t_end <= t, so drop them here
+            ev[m] = merged[i]
+            last = merged[i]
+            m += 1
+    n_rad_at = np.empty(m, dtype=np.int64)
+    n_io_at = np.empty(m, dtype=np.int64)
+    t = t0
+    for e in range(m):
+        nr = 0
+        for i in range(tr.shape[0]):
+            if t >= tr[i] + delay:
+                nr += 1
+        ni = 0
+        for j in range(tau_io.shape[0]):
+            if t >= tau_io[j]:
+                ni += 1
+        n_rad_at[e] = nr
+        n_io_at[e] = ni
+        t = ev[e]
+    return ev[:m], n_rad_at, n_io_at, tr
+
+
+@njit(cache=True)
+def predict_on_grid(ic, phi, times, n_obs, r, cc, a_rad, b_rad, delay, s, lam, tr, dose_rad, dose_io,
+                    rtol, atol, ev, n_rad_at, n_io_at):
+    """predict_mouse with the event grid supplied instead of rebuilt."""
+    out = np.empty(n_obs)
+    t = times[0]
+    y = ic
+    out[0] = ic
+    dose_pow = dose_io ** lam
+    k = 1
+    while k < n_obs and times[k] <= t:
+        out[k] = y
+        k += 1
+    h = 0.1
+    budget = MAX_STEPS
+    for e in range(ev.shape[0]):
+        if k >= n_obs:
+            break
+        y, h, used = _segment(t, y, ev[e], h, r, cc, a_rad, b_rad, delay, dose_rad, tr, n_rad_at[e],
+                              phi * n_io_at[e], s, lam, dose_pow, rtol, atol, budget)
+        budget -= used
+        if not np.isfinite(y):
+            out[k:] = np.nan
+            return out
+        t = ev[e]
+        while k < n_obs and times[k] <= t:
+            out[k] = y
+            k += 1
+    return out
+
+
+@njit(cache=True)
+def cohort_loglik(ics, phis, std, times, volumes, n_obs, r, cc, a_rad, b_rad, delay, s, lam, tr, tau_io,
+                  dose_rad, dose_io, rtol, atol, ev2d, n_ev, nrad2d, nio2d):
     """Gaussian log-likelihood summed over mice (rows of times/volumes, n_obs[m] observations each)."""
     total = 0.0
     var = std * std
     log_norm = np.log(2.0 * np.pi * var)
     for m in range(ics.shape[0]):
         n = n_obs[m]
-        pred = predict_mouse(ics[m], phis[m], times[m], n, r, cc, a_rad, b_rad, delay, s, lam, tau_rad, tau_io,
-                             dose_rad, dose_io, rtol, atol)
+        e = n_ev[m]
+        pred = predict_on_grid(ics[m], phis[m], times[m], n, r, cc, a_rad, b_rad, delay, s, lam, tr,
+                               dose_rad, dose_io, rtol, atol, ev2d[m, :e], nrad2d[m, :e], nio2d[m, :e])
         for k in range(n):
             if not np.isfinite(pred[k]):
                 return -np.inf
@@ -174,11 +242,29 @@ class Cohort:
             self.times[i, :len(m['data'])] = m['data'][:, 0]
             self.volumes[i, :len(m['data'])] = m['data'][:, 1]
         self.suv = np.array([np.nan if m['SUV'] is None else m['SUV'] for m in mice])
+        self.volume0 = self.volumes[:, 0].copy()
+        self._grids = {}
         self.tau_rad = np.asarray(mice[0]['rad_days'], dtype=float)
         self.tau_io = np.asarray(mice[0]['io_days'], dtype=float)
         for m in mice:
             if not (np.array_equal(m['rad_days'], self.tau_rad) and np.array_equal(m['io_days'], self.tau_io)):
                 raise ValueError('Cohort requires the same treatment schedule for every mouse.')
+
+    def grid(self, delay):
+        """Padded event grids of every mouse, for one value of the radiotherapy delay."""
+        key = round(float(delay), 12)
+        if key not in self._grids:
+            per_mouse = [event_grid(self.times[m], int(self.n_obs[m]), key, self.tau_rad, self.tau_io)
+                         for m in range(len(self.names))]
+            width = max(len(g[0]) for g in per_mouse)
+            ev2d = np.zeros((len(per_mouse), width))
+            nrad2d = np.zeros((len(per_mouse), width), dtype=np.int64)
+            nio2d = np.zeros((len(per_mouse), width), dtype=np.int64)
+            n_ev = np.array([len(g[0]) for g in per_mouse], dtype=np.int64)
+            for m, (ev, nrad, nio, _) in enumerate(per_mouse):
+                ev2d[m, :len(ev)], nrad2d[m, :len(ev)], nio2d[m, :len(ev)] = ev, nrad, nio
+            self._grids[key] = (ev2d, n_ev, nrad2d, nio2d, per_mouse[0][3])
+        return self._grids[key]
 
 
 _COHORTS = {}
@@ -196,17 +282,19 @@ def log_likelihood(model, params, ics, std, mice, upstream, dose_rad=2.0, dose_i
     if model == '_RadImmunoFixed':
         phis = np.full(len(mice), float(upstream['d']))
     else:
-        phis = np.array([float(lysis_coefficient(model, params, v, upstream)) for v in c.suv])
+        values = c.volume0 if COVARIATE.get(model) == 'volume0' else c.suv
+        phis = np.array([float(lysis_coefficient(model, params, v, upstream)) for v in values])
+    ev2d, n_ev, nrad2d, nio2d, tr = c.grid(upstream['delay'])
     return float(cohort_loglik(np.asarray(ics, dtype=float), phis, float(std), c.times, c.volumes, c.n_obs,
                                upstream['r'], upstream['cc'], upstream['a_rad'], upstream['b_rad'],
-                               upstream['delay'], upstream['s'], upstream['lam'], c.tau_rad, c.tau_io,
-                               float(dose_rad), float(dose_io), rtol, atol))
+                               upstream['delay'], upstream['s'], upstream['lam'], tr, c.tau_io,
+                               float(dose_rad), float(dose_io), rtol, atol, ev2d, n_ev, nrad2d, nio2d))
 
 
 def predict(model, params, ic, mouse, upstream, dose_rad=2.0, dose_io=1.0, rtol=RTOL, atol=ATOL):
     """Volumes at the observed times of one mouse (same values as rad_immuno_models.solve_mouse)."""
     t = np.ascontiguousarray(mouse['data'][:, 0], dtype=float)
-    phi = float(lysis_coefficient(model, params, mouse['SUV'], upstream))
+    phi = float(lysis_coefficient(model, params, covariate_value(model, mouse), upstream))
     return predict_mouse(float(ic), phi, t, len(t), upstream['r'], upstream['cc'], upstream['a_rad'],
                          upstream['b_rad'], upstream['delay'], upstream['s'], upstream['lam'],
                          np.asarray(mouse['rad_days'], dtype=float), np.asarray(mouse['io_days'], dtype=float),

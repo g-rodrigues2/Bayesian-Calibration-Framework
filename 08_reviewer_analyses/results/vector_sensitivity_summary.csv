@@ -1,0 +1,4 @@
+vector,total_SUVLinear,above_M0_SUVLinear,total_SUVExp,above_M0_SUVExp,total_VolExp,above_M0_VolExp,total_RadImmunoFixed,above_M0_RadImmunoFixed,total_RadImmunoFitD,order,best_suv,best_non_suv,advantage
+max_likelihood,-2864.079990,12,-2865.886998,11,-3180.606755,9,-3402.306250,7,-3349.848807,_SUVLinear > _SUVExp > _VolExp > _RadImmunoFitD > _RadImmunoFixed,_SUVLinear,_RadImmunoFitD,485.768817
+marginal_median,-2765.548116,11,-2825.656515,11,-3139.666032,10,-3297.851424,7,-3171.362667,_SUVLinear > _SUVExp > _VolExp > _RadImmunoFitD > _RadImmunoFixed,_SUVLinear,_RadImmunoFitD,405.814551
+submitted,-2857.945773,12,-2866.673509,11,-3176.610370,10,-3207.645430,6,-3350.545233,_SUVLinear > _SUVExp > _VolExp > _RadImmunoFixed > _RadImmunoFitD,_SUVLinear,_RadImmunoFixed,349.699657

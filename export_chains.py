@@ -1,7 +1,8 @@
 """Exports the MCMC chains reported in Chapter 4 for the data deposit (Zenodo).
 
 Exported chains: the selected models (Appendix table of selected chains) and the leave-one-out analysis
-(training folds and held-out chains of both formulations). Each HDF5 backend becomes one compressed file
+(training folds of the five formulations, held-out chains of the two drawn in the figures). Each HDF5
+backend becomes one compressed file
 
     <out>/<stage folder>/<backend name>.npz
         chain       (steps/thin, walkers, parameters) float32, every `thin`-th step of the full chain
@@ -12,9 +13,10 @@ Exported chains: the selected models (Appendix table of selected chains) and the
         stuck       (walkers,) walkers removed as stuck in the thesis
         labels      parameter names (in sampling coordinates; d and s of the immunotherapy chain are logs)
 
-Thinning by 10 keeps at least 30 samples per integrated autocorrelation time for every exported chain, so
-the convergence diagnostics (steps over tau, split R-hat) computed from the exported files agree with the
-thesis tables. Read a file with `read_exported_chain`.
+Each chain is thinned by the largest interval, up to `--thin`, that keeps at least 30 samples per
+integrated autocorrelation time of its post-burn-in part, so the convergence diagnostics (steps over tau,
+split R-hat) computed from the exported files approximate those of the thesis tables, which were computed
+from the full chains. Read a file with `read_exported_chain`.
 
     python export_chains.py --out <folder> [--thin 10]
 """
@@ -50,6 +52,7 @@ SELECTED = [
      '06_combined_treatment/Output_Calibration/suv/estimate_rad+io_sensitive_SUVLinear.npz'),
 ]
 LOO_PATTERNS = ('rad+io_sensitive_EXCL-*.h5', 'rad+io_sensitive_PRED-*.h5')
+SAMPLES_PER_TAU = 30
 
 
 def chain_list():
@@ -66,7 +69,7 @@ def _labels(npz, ndim, name):
         return [str(x) for x in np.load(os.path.join(HERE, npz), allow_pickle=True)['labels']]
     if '_PRED-' in name:
         return ['ic', 'std']
-    if name.endswith('_SUVLinear.h5'):
+    if name.endswith(('_SUVLinear.h5', '_SUVExp.h5', '_VolExp.h5')):
         return ['a', 'b'] + [f'ic{i + 1}' for i in range(ndim - 3)] + ['std']
     if name.endswith('_RadImmunoFitD.h5'):
         return ['d'] + [f'ic{i + 1}' for i in range(ndim - 2)] + ['std']
@@ -79,13 +82,16 @@ def export(path, stage, npz, out, thin):
     steps = chain.shape[0]
     burn = steps // 4
     stuck = find_stuck_walkers(log_prob[burn:])
+    tau = float(np.max(emcee.autocorr.integrated_time(chain[burn:][:, ~stuck], tol=0)))
+    thin = max(1, min(thin, int(tau // SAMPLES_PER_TAU)))
     name = os.path.basename(path)
     target = os.path.join(out, stage, name.replace('.h5', '.npz'))
     os.makedirs(os.path.dirname(target), exist_ok=True)
     np.savez_compressed(target, chain=chain[::thin].astype(np.float32), log_prob=log_prob[::thin].astype(np.float32),
                         thin=thin, n_steps=steps, burn_in=burn, stuck=stuck,
                         labels=np.array(_labels(npz, chain.shape[2], name)))
-    return dict(file=os.path.relpath(target, out).replace('\\', '/'), steps=int(steps), walkers=int(chain.shape[1]),
+    return dict(file=os.path.relpath(target, out).replace('\\', '/'), steps=int(steps), thin=thin,
+                walkers=int(chain.shape[1]),
                 parameters=int(chain.shape[2]), stuck=int(stuck.sum()), megabytes=round(os.path.getsize(target) / 1e6, 1))
 
 

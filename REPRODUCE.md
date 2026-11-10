@@ -74,12 +74,26 @@ Prefix every command with `CALIB_GROWTH_SOURCE=fixed`.
 | Posterior of a and b | `python posterior_suv_params.py` and `python thesis_figures.py --figures fig14` | `fig14a.png`, `fig14b.png` |
 | Leave-one-out: held-out log-likelihood table | `python loo.py train`, `python loo.py strict` | `Output_Calibration/loo/strict_loo_summary.csv` |
 | Leave-one-out figures | `python loo.py conditional` then `python thesis_figures.py --figures loo` | `SUV_contribution.png`, `LOO_held_out_SUV_based_ALL.png`, `fig_LOO_semSUV_ALL.png` |
+| Propagation of the upstream uncertainty | `python upstream_uncertainty.py` | `Output_Calibration/upstream_uncertainty_summary.csv` |
+| Agreement between the integrators | `python solver_agreement.py` | `Output_Calibration/solver_agreement.csv` |
+| Leave-one-out score integrated over the posterior of each fold (five formulations) | `python loo_posterior.py --draws 6000` | `Output_Calibration/loo/posterior_loo_summary.csv` |
+| Convergence of the 75 leave-one-out training chains | `python check_loo_convergence.py --models _SUVLinear,_SUVExp,_VolExp,_RadImmunoFixed,_RadImmunoFitD --out Output_Calibration/loo/convergence_loo.csv` (reads `reinitiate_files/` when present, otherwise the thinned chains of `chains/`, which give the same verdicts and step counts and steps over tau within 0.7%) | `Output_Calibration/loo/convergence_loo.csv` |
 
 ## Stage 7 — verification of the BIC tables (`07_bic_verification`)
 
 | Thesis item | Command | Output |
 |---|---|---|
 | Maximum log-likelihoods of every BIC table of Chapter 4 (growth models, sharing scenarios, radiotherapy models and scenarios, immunotherapy models, SUV functions) | `python verify_bic.py run --scope global` and `--scope mouse`, then `python summarize_bic.py` | `results/summary.md`, `results/table_<label>.csv` |
+
+## Stage 8 — analyses requested by the reviewers (`08_reviewer_analyses`)
+
+| Item | Command | Output |
+|---|---|---|
+| Within-mouse correlation and heteroscedasticity of the residuals, and the BIC of the parameter-sharing scenarios recomputed with the effective sample size | `python likelihood_sensitivity.py` | `results/residual_structure.csv`, `results/residual_summary.csv`, `results/bic_neff.csv` |
+| Sensitivity of the leave-one-out comparison to the inherited immunotherapy vector | `python vector_sensitivity.py` (about 27 CPU-hours of refits; `--check-only` only checks, in seconds, that the fold estimates reproduce the leave-one-out table) | `results/vector_sensitivity_summary.csv` |
+
+The leave-one-out arms added for the review, `_SUVExp` and `_VolExp`, belong to stage 6 and are run
+from there: `python loo.py train --models _SUVExp,_VolExp` followed by `python loo.py strict`.
 
 ## Convergence
 
@@ -88,4 +102,5 @@ parameter had at least 50 integrated autocorrelation times after burn-in and spl
 the READMEs of the stages for the exact commands and `Output_Calibration/convergence_*.csv` for the
 diagnostics of each extension). Many chains can run at once: use `CALIB_USE_POOL=0` and one process per
 chain. The chains of `chains/`, written by `export_chains.py`, reproduce the Appendix
-tables of convergence diagnostics.
+tables of convergence diagnostics to within 1% in steps per autocorrelation time and 0.001 in split
+R-hat, since they are thinned.
