@@ -19,6 +19,7 @@ import numpy as np
 BAND = 'lightblue'
 PREDICTIVE = 'peachpuff'
 HIST = '#4B88A2'
+CRI_BAND = '#BDBDBD'   # 95% credible interval behind the posterior histograms
 PASTEL = {'sensitive': '#a1c9f4', 'resistant': '#ffb482', 'global': '#8de5a1'}   # seaborn "pastel" 0, 1, 2
 VOLUME_LABEL = r'Tumor Volume ($\times10^3$ mm³)'
 
@@ -191,21 +192,27 @@ def posterior_histogram(samples, best, path, width_on_page, label, bounds=None):
     """Posterior histogram with kernel density, drawn at the width it has on the printed page.
 
     `width_on_page` is that width in inches and `label` the parameter written below the axis, so that the
-    text of the panel is printed at the 9 pt of the thesis. The dashed line marks the maximum-likelihood
-    sample and the dotted lines the prior bounds, drawn only when they fall inside the plotted range.
+    text of the panel is printed at the 9 pt of the thesis. The gray band is the 95% credible interval
+    (percentiles 2.5 and 97.5) and the dotted line the posterior median, the two summaries printed above
+    each panel; the dashed line marks the maximum-likelihood sample and the gray dash-dotted lines the
+    prior bounds, drawn only when they fall inside the plotted range.
     Tick labels are mantissas and the power of ten is written in the label."""
     import seaborn as sns
 
     times_font(PANEL_FONT)
     plt.rcParams['mathtext.fontset'] = 'cm'   # mathematics as in the body text
     fig, ax = plt.subplots(figsize=(width_on_page, width_on_page * PANEL_ASPECT))
-    sns.histplot(np.asarray(samples, float), bins=30, kde=True, ax=ax, color=HIST, alpha=0.7, linewidth=0.3)
+    x = np.asarray(samples, float)
+    q_lo, q_med, q_hi = np.percentile(x, [2.5, 50.0, 97.5])
+    ax.axvspan(q_lo, q_hi, color=CRI_BAND, alpha=0.55, linewidth=0, zorder=0)
+    sns.histplot(x, bins=30, kde=True, ax=ax, color=HIST, alpha=0.7, linewidth=0.3)
+    ax.axvline(q_med, linestyle=':', linewidth=1.1, color='black')
     if best is not None:
         ax.axvline(float(best), linestyle='--', linewidth=0.8, color='black')
     lo, hi = ax.get_xlim()
     for bound in bounds or ():
         if lo <= float(bound) <= hi:
-            ax.axvline(float(bound), linestyle=':', linewidth=0.8, color='black')
+            ax.axvline(float(bound), linestyle='-.', linewidth=0.8, color='#7F7F7F')
     ax.set_ylabel('')
     ax.set_yticks([])
     ax.xaxis.set_major_locator(mticker.MaxNLocator(nbins=3, steps=[1, 2, 2.5, 5, 10]))
