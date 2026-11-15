@@ -21,13 +21,16 @@ _TREAT_BOUNDS = {
     # the worst-covered mouse 84.2% and 63.2%): the cumulative dose multiplies the effect and the prior
     # produced too strong a tumor kill. alpha_immuno and the lower bounds are unchanged.
     #
-    # Rerun with the compiled solver (2026-09-18, 3 seeds x 20000 draws, ppc_grid.py protocol): CD covers
-    # every observation from 11 upward, so the adopted 15 is conservative. ACD at 100 still leaves one
-    # observation of one mouse outside the band in 2 of the 3 sets; complete coverage holds between 150
-    # and 300 and is lost again at 500 (a very wide box makes the small-mu draws that form the upper edge
-    # of the band rare), so the criterion is not monotone in the bound and 100 was kept -- ACD is rejected
-    # by a wide margin by the BIC anyway. The earlier choice of 100 rested on runs with odeint, which does
-    # not restart at each dose: under odeint ACD already covered everything at 60.
+    # Sensitivity to the upper bound with the compiled solver: ppc_bound_sweep.py, protocol of ppc_grid.py,
+    # seeds 0-2 x 20000 draws, output Output_Calibration/ppc_bound_sweep_io_sensitive.csv (2026-11-14).
+    # CD covers every observation in all three sets from 10 upward, so the adopted 15 is conservative.
+    # ACD covers every observation in all three sets between 90 and 300, including the adopted 100;
+    # at 70-80 one or two observations fall outside in some sets and at 500 one falls outside again in
+    # every set (a very wide box makes the small-mu draws that form the upper edge of the band rare), so
+    # the criterion is not monotone in the bound. Under odeint, which does not restart at each dose, ACD
+    # already covered everything at 60. An earlier run (2026-09-18) had reported ACD at 100 leaving one
+    # observation outside in 2 of 3 sets and complete coverage only from 150; it does not reproduce with
+    # the current code.
     '_CumulativeDose':        (['alpha_immuno', 'beta_immuno'], [0.01, 5.0], [1.0, 15.0]),
     '_AccelED':               (['alpha_immuno', 'beta_immuno'], [0.01, 1.5], [1.0, 5.0]),
     '_AccelCD':               (['alpha_immuno', 'beta_immuno'], [0.01, 1.5], [1.0, 100.0]),

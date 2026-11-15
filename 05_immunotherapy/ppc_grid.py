@@ -5,8 +5,10 @@
 For each model, parameter vectors are drawn from the uniform prior (bounds_imm.py), the tumor
 trajectory of each mouse is simulated with the inherited growth parameters and observation noise
 (std from its prior) is added. The 5%-95% band of the simulated observations defines, per mouse,
-the coverage (percentage of observed volumes inside the band); each panel reports the median,
-interquartile range, mean, minimum and maximum of the coverage across mice. Writes
+the coverage (percentage of observed volumes inside the band); each panel reports the number of
+observations inside the band pooled over the mice and the coverage of each mouse. With three mice,
+summaries such as the median or the interquartile range across mice add nothing and read as if every
+observation were covered when one mouse is not. Writes
 Output_Calibration/ppc_grid_io_sensitive.png and ppc_coverage_io_sensitive.csv.
 """
 import _path_setup  # noqa: F401
@@ -53,7 +55,7 @@ def simulate(model, mice, growth, max_ic, n_draws, rng):
     return times, sims
 
 
-def panel(ax, times, sims, mice, coverage, n_draws, letter):
+def panel(ax, times, sims, mice, inside, n_obs, letter):
     """One model, in the layout of the thesis figure."""
     for sim in sims:
         low, up = np.percentile(sim, [5, 95], axis=0)
@@ -68,10 +70,9 @@ def panel(ax, times, sims, mice, coverage, n_draws, letter):
     ax.yaxis.offsetText.set_visible(False)
     ax.tick_params(axis='both', which='major', labelsize=18)
     ax.text(0.03, 0.97, f'{letter})', transform=ax.transAxes, fontsize=20, va='top', ha='left')
-    c = np.asarray(coverage)
-    text = (f'Coverage: {np.median(c):.1f}% (IQR: {np.percentile(c, 25):.1f}-{np.percentile(c, 75):.1f}%)\n'
-            f'mean={c.mean():.1f}%  min={c.min():.1f}%  max={c.max():.1f}%\n'
-            f'mice={len(mice)}  times={len(times)}  draws={n_draws}')
+    per_mouse = ', '.join(f'{100.0 * k / n:.1f}%'.replace('100.0%', '100%') for k, n in zip(inside, n_obs))
+    text = (f'Inside the band: {sum(inside)} of {sum(n_obs)} obs. ({100.0 * sum(inside) / sum(n_obs):.1f}%)\n'
+            f'Per mouse: {per_mouse}')
     ax.text(0.1, 0.97, text, transform=ax.transAxes, fontsize=20, fontfamily='Times New Roman', va='top',
             bbox=dict(boxstyle='round,pad=0.35', facecolor='white', alpha=0.9, edgecolor='gray'))
 
@@ -95,14 +96,17 @@ def main():
     rows = []
     for k, (ax, model) in enumerate(zip(axes.ravel(), THESIS_MODELS)):
         times, sims = simulate(model, mice, growth, max_ic, args.draws, rng)
-        coverage = []
+        inside, n_obs = [], []
         for mouse, sim in zip(mice, sims):
             lo, hi = np.percentile(sim, [5, 95], axis=0)
             idx = np.searchsorted(times, mouse['data'][:, 0])
             obs = mouse['data'][:, 1]
-            coverage.append(100.0 * np.mean((obs >= lo[idx]) & (obs <= hi[idx])))
-            rows.append(dict(model=model, mouse=mouse['name'], coverage_pct=coverage[-1]))
-        panel(ax, times, sims, mice, coverage, args.draws, string.ascii_uppercase[k])
+            hit = (obs >= lo[idx]) & (obs <= hi[idx])
+            inside.append(int(hit.sum()))
+            n_obs.append(len(obs))
+            rows.append(dict(model=model, mouse=mouse['name'], coverage_pct=100.0 * hit.mean(),
+                             n_inside=inside[-1], n_obs=n_obs[-1]))
+        panel(ax, times, sims, mice, inside, n_obs, string.ascii_uppercase[k])
     fig.subplots_adjust(left=0.06, right=0.98, bottom=0.08, top=0.98, wspace=0.15, hspace=0.1)
     os.makedirs(args.out, exist_ok=True)
     fig.savefig(os.path.join(args.out, f'ppc_grid_{GROUP}.png'), dpi=300, bbox_inches='tight', pad_inches=0.02)

@@ -27,6 +27,7 @@ prior band with the original bounds (8 and 5); see `bounds_imm.py`.
 CALIB_GROWTH_SOURCE=fixed CALIB_MODELS=_dePillisRadunskayaLaw CALIB_CHAIN_SIZE=30000 python global.py
 CALIB_MODE=mouse_specific CALIB_GROWTH_SOURCE=fixed CALIB_MODELS=_AccelCD python global.py
 CALIB_GROWTH_SOURCE=fixed python ppc_grid.py --draws 20000 --seed 0   # prior predictive figure of the thesis
+CALIB_GROWTH_SOURCE=fixed python ppc_bound_sweep.py   # coverage vs upper bound of mu (CD, ACD), seeds 0-2
 CALIB_GROWTH_SOURCE=fixed python profile_likelihood.py --model _dePillisRadunskayaLaw --extend d=50
 CALIB_GROWTH_SOURCE=fixed python profile_likelihood.py --plot-only   # redraw the profile figure from its table
 CALIB_GROWTH_SOURCE=fixed python thesis_figures.py                   # fig10a-c and fig11
@@ -59,6 +60,7 @@ model_selection_imm.py   information criteria
 postprocess_imm.py       bands, CCC/PCC and figures
 prior_predictive.py      prior predictive check per model
 ppc_grid.py              prior predictive figure of the 12 models
+ppc_bound_sweep.py       sensitivity of the prior predictive coverage to the bound of mu (CD, ACD)
 posterior_diagnostics.py autocorrelation, ESS, R-hat, mass near bounds, correlations
 profile_likelihood.py    profile log-likelihood of the treatment parameters
 thesis_figures.py        thesis figures of the de Pillis-Radunskaya calibration
